@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚡ ERP Pro Control</title>
+    <title>⚡ ERP Control Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -11,7 +11,6 @@
             --text: var(--tg-theme-text-color, #000000);
             --hint: var(--tg-theme-hint-color, #8e8e93);
             --accent: var(--tg-theme-button-color, #007aff);
-            --accent-text: var(--tg-theme-button-text-color, #ffffff);
             --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
         }
 
@@ -19,142 +18,156 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            padding: 16px;
+            padding: 16px 16px 90px 16px; /* Espaço para a barra inferior */
             margin: 0;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
         }
 
-        .tela { display: none; animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* Sistema de Abas */
+        .tela { display: none; animation: fadeIn 0.2s ease; }
         .tela.ativa { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .header { text-align: center; margin-bottom: 24px; }
-        .header h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
-        .header p { margin: 4px 0 0 0; color: var(--hint); font-size: 13px; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h2 { margin: 0; font-size: 20px; font-weight: 700; }
 
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-        
-        .card {
-            background-color: var(--card-bg);
-            padding: 18px 12px;
-            border-radius: 14px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.1s ease, box-shadow 0.1s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            border: 1px solid rgba(0,0,0,0.04);
-        }
-        .card:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
-        .card .icon { font-size: 32px; margin-bottom: 8px; display: inline-block; }
-        .card h3 { margin: 0; font-size: 14px; font-weight: 600; }
+        /* Formulários e Inputs estilo iOS */
+        .input-group { background-color: var(--card-bg); padding: 12px 16px; border-radius: 12px; margin-bottom: 12px; border: 1px solid rgba(0,0,0,0.05); }
+        .input-group label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--hint); margin-bottom: 4px; }
+        .input-group input, .input-group textarea { width: 100%; border: none; background: transparent; color: var(--text); font-size: 16px; outline: none; font-family: inherit; }
 
-        .card.full { grid-column: span 2; background-color: #ff3b30; color: white; border: none; }
-        .card.full h3 { color: white; }
-        .card.admin { grid-column: span 2; background-color: #5856d6; color: white; border: none; display: none; }
-        .card.admin h3 { color: white; }
+        .btn-acao { width: 100%; padding: 16px; background-color: var(--accent); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; }
 
-        .input-group { background-color: var(--card-bg); padding: 12px 16px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.03); }
-        .input-group label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--hint); letter-spacing: 0.5px; margin-bottom: 4px; }
-        .input-group input, .input-group textarea { width: 100%; border: none; background: transparent; color: var(--text); font-size: 16px; padding: 4px 0; outline: none; font-family: inherit; box-sizing: border-box; }
+        /* Barra de Abas Fixa Inferior */
+        .tab-bar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--card-bg); display: flex; justify-content: space-around; padding: 10px 0 25px 0; border-top: 1px solid rgba(0,0,0,0.08); box-shadow: 0 -4px 15px rgba(0,0,0,0.03); }
+        .tab-item { display: flex; flex-direction: column; align-items: center; color: var(--hint); font-size: 11px; font-weight: 600; cursor: pointer; background: none; border: none; width: 25%; }
+        .tab-item .icon { font-size: 24px; margin-bottom: 4px; }
+        .tab-item.active { color: var(--accent); }
 
-        .btn-salvar { width: 100%; padding: 16px; background-color: var(--accent); color: var(--accent-text); border: none; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .btn-voltar { width: 100%; padding: 14px; background-color: transparent; color: var(--accent); border: none; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+        /* Resultados internos (Busca) */
+        .lista-resultados { margin-top: 15px; }
+        .item-resultado { background-color: var(--card-bg); padding: 14px; border-radius: 12px; margin-bottom: 10px; font-size: 14px; line-height: 1.6; border-left: 4px solid var(--accent); }
     </style>
 </head>
 <body>
 
-    <div id="tela-menu" class="tela ativa">
-        <div class="header">
-            <h2>⚡ ERP Pro Control</h2>
-            <p>Selecione o módulo de captura ou consulta</p>
-        </div>
-        <div class="menu-grid">
-            <div class="card" onclick="abrirTela('tela-loja')"><div class="icon">🏬</div>h3>Nova Loja</h3></div>
-            <div class="card" onclick="abrirTela('tela-aniv')"><div class="icon">🎂</div><h3>Aniversário</h3></div>
-            <div class="card" onclick="abrirTela('tela-os')"><div class="icon">💼</div><h3>Anotar O.S.</h3></div>
-            <div class="card" onclick="tg.showAlert('Acesse relatórios e taxas pelo Painel Admin no menu do chat.')"><div class="icon">📊</div><h3>Relatórios</h3></div>
-            <div class="card" onclick="solicitarDadosBot('consultar_lojas')"><div class="icon">🏬🔍</div><h3>Buscar Loja</h3></div>
-            <div class="card" onclick="solicitarDadosBot('consultar_pessoas')"><div class="icon">👤🔍</div><h3>Buscar Pessoa</h3></div>
-            <div class="card admin" id="btn-admin-secret" onclick="abrirTela('tela-admin')"><div class="icon">🔒</div><h3>Painel Master</h3></div>
-            <div class="card full" onclick="tg.close()"><div class="icon">🚪</div><h3>Fechar App</h3></div>
-        </div>
-    </div>
-
-    <div id="tela-loja" class="tela">
-        <div class="header"><h2>🏬 Cadastrar Nova Loja</h2><p>Preencha os dados comerciais da unidade</p></div>
+    <div id="tela-cadastro" class="tela ativa">
+        <div class="header"><h2>🏬 Nova Loja</h2></div>
         <div class="input-group"><label>Nome da Loja</label><input type="text" id="l_nome" placeholder="Ex: Decora Móveis"></div>
-        <div class="input-group"><label>Nome do Vendedor</label><input type="text" id="l_vend" placeholder="Ex: Roberto Silva"></div>
-        <div class="input-group"><label>WhatsApp do Vendedor</label><input type="tel" id="l_whats" placeholder="(62) 99999-9999" oninput="mascaraTelefone(this)"></div>
-        <div class="input-group"><label>Telefone da Loja</label><input type="tel" id="l_tel_loja" placeholder="(62) 3333-4444" oninput="mascaraTelefone(this)"></div>
-        <button class="btn-salvar" onclick="enviarLoja()">💾 Salvar Registro</button>
-        <button class="btn-voltar" onclick="abrirTela('tela-menu')">◀️ Voltar ao Hub</button>
+        <div class="input-group"><label>Vendedor</label><input type="text" id="l_vend" placeholder="Ex: Roberto Silva"></div>
+        <div class="input-group"><label>WhatsApp</label><input type="tel" id="l_whats" placeholder="(62) 99999-9999" oninput="mascaraTelefone(this)"></div>
+        <div class="input-group"><label>Fixo Loja</label><input type="tel" id="l_tel_loja" placeholder="(62) 3333-4444" oninput="mascaraTelefone(this)"></div>
+        <button class="btn-acao" onclick="enviarLoja()">💾 Salvar Loja</button>
     </div>
 
     <div id="tela-aniv" class="tela">
-        <div class="header"><h2>🎂 Lançar Aniversariante</h2><p>Alinhado com as rotinas automáticas das 08:00</p></div>
+        <div class="header"><h2>🎂 Lançar Aniversariante</h2></div>
         <div class="input-group"><label>Nome Completo</label><input type="text" id="a_nome" placeholder="Ex: Carlos Andrade"></div>
-        <div class="input-group"><label>Data de Nascimento</label><input type="text" id="a_data" placeholder="DD/MM/AAAA" oninput="mascaraData(this)"></div>
-        <div class="input-group"><label>Celular c/ DDD</label><input type="tel" id="a_cel" placeholder="(62) 99999-9999" oninput="mascaraTelefone(this)"></div>
-        <button class="btn-salvar" onclick="enviarAniv()">💾 Gravar Aniversário</button>
-        <button class="btn-voltar" onclick="abrirTela('tela-menu')">◀️ Voltar ao Hub</button>
+        <div class="input-group"><label>Data de Nasc.</label><input type="text" id="a_data" placeholder="DD/MM/AAAA" oninput="mascaraData(this)"></div>
+        <div class="input-group"><label>Celular</label><input type="tel" id="a_cel" placeholder="(62) 99999-9999" oninput="mascaraTelefone(this)"></div>
+        <button class="btn-acao" onclick="enviarAniv()">💾 Gravar Aniversário</button>
     </div>
 
     <div id="tela-os" class="tela">
-        <div class="header"><h2>💼 Captura de O.S.</h2><p>Lançamento provisório como PENDENTE</p></div>
+        <div class="header"><h2>💼 Bloco de Notas O.S.</h2></div>
         <div class="input-group"><label>Nome do Serviço</label><input type="text" id="o_nome" placeholder="Ex: matriz, bico, afiação"></div>
-        <div class="input-group"><label>Descrição / Detalhes Técnicos</label><textarea id="o_desc" rows="4" placeholder="Ex: fazer completa com arinhos 4 matriz"></textarea></div>
-        <button class="btn-salvar" onclick="enviarOS()">💾 Salvar Nota de Serviço</button>
-        <button class="btn-voltar" onclick="abrirTela('tela-menu')">◀️ Voltar ao Hub</button>
+        <div class="input-group"><label>Detalhes Técnicos</label><textarea id="o_desc" rows="4" placeholder="Ex: fazer completa..."></textarea></div>
+        <button class="btn-acao" onclick="enviarOS()">💾 Salvar Nota</button>
     </div>
 
-    <div id="tela-admin" class="tela">
-        <div class="header"><h2>🔒 Painel Executivo</h2><p>Ações e extração de relatórios analíticos</p></div>
-        <div class="menu-grid">
-            <div class="card" onclick="solicitarDadosBot('pdf_aniv')"><div class="icon">📈</div><h3>PDF Aniv Mês</h3></div>
-            <div class="card" onclick="solicitarDadosBot('pdf_os')"><div class="icon">📋</div><h3>PDF Todas O.S</h3></div>
-            <div class="card" onclick="solicitarDadosBot('gerenciar_acessos')"><div class="icon">🔑</div><h3>Acessos IDs</h3></div>
-            <div class="card" onclick="solicitarDadosBot('editar_taxas')"><div class="icon">💳</div><h3>Taxa Maquininha</h3></div>
-        </div>
-        <button class="btn-voltar" onclick="abrirTela('tela-menu')">◀️ Voltar ao Hub</button>
+    <div id="tela-busca" class="tela">
+        <div class="header"><h2>🔍 Consulta Inteligente</h2></div>
+        <div class="input-group"><label>Digite o termo</label><input type="text" id="campo-busca" placeholder="Nome, Loja ou Vendedor" oninput="executarBuscaInterna(this.value)"></div>
+        <div id="container-resultados" class="lista-resultados"></div>
+    </div>
+
+    <div class="tab-bar">
+        <button class="tab-item active" onclick="mudarAba('tela-cadastro', this)"><div class="icon">🏬</div><div>Lojas</div></button>
+        <button class="tab-item" onclick="mudarAba('tela-aniv', this)"><div class="icon">🎂</div><div>Aniv.</div></button>
+        <button class="tab-item" onclick="mudarAba('tela-os', this)"><div class="icon">💼</div><div>O.S.</div></button>
+        <button class="tab-item" onclick="mudarAba('tela-busca', this)"><div class="icon">🔍</div><div>Buscar</div></button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        let user = tg.initDataUnsafe.user;
-        if (user && user.id) {
-            tg.sendData(JSON.stringify({ tipo: "verificar_role", user_id: user.id }));
-        }
+        // 🚨 MUDE AQUI PARA O SEU NO-IP
+        const API_URL = "https://gouveiaflix.ddns.net:10555";
 
-        window.addEventListener("message", function(event) {
-            if(event.data === "show_admin") {
-                document.getElementById('btn-admin-secret').style.display = 'block';
-            }
-        });
-
-        function abrirTela(idTela) {
+        function mudarAba(idTela, botao) {
             document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+            document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
             document.getElementById(idTela).classList.add('ativa');
+            botao.classList.add('active');
         }
 
         function mascaraTelefone(input) {
             let v = input.value.replace(/\D/g, ''); 
             if (v.length > 11) v = v.slice(0, 11); 
-            if (v.length > 10) { v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3'); } 
-            else if (v.length > 6) { v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3'); } 
-            else if (v.length > 2) { v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2'); } 
-            else if (v.length > 0) { v = v.replace(/^(\d*)/, '($1'); }
+            if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');   
+            else if (v.length > 6) v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+            else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+            else if (v.length > 0) v = v.replace(/^(\d*)/, '($1');
             input.value = v; 
         }
 
         function mascaraData(input) {
             let v = input.value.replace(/\D/g, ''); 
             if (v.length > 8) v = v.slice(0, 8); 
-            if (v.length > 4) { v = v.replace(/^(\d{2})(\d{2})(\d{0,4}).*/, '$1/$2/$3'); } 
-            else if (v.length > 2) { v = v.replace(/^(\d{2})(\d{0,2})/, '$1/$2'); }
+            if (v.length > 4) v = v.replace(/^(\d{2})(\d{2})(\d{0,4}).*/, '$1/$2/$3');
+            else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,2})/, '$1/$2');
             input.value = v; 
+        }
+
+        async function executarBuscaInterna(termo) {
+            let container = document.getElementById('container-resultados');
+            if (termo.length < 2) { container.innerHTML = ""; return; }
+
+            try {
+                let response = await fetch(`${API_URL}/api/buscar?query=${encodeURIComponent(termo)}`);
+                let resultados = await response.json();
+                
+                container.innerHTML = "";
+                if (resultados.length === 0) {
+                    container.innerHTML = "<div class='item-resultado'>❌ Nada encontrado.</div>"; return;
+                }
+
+                resultados.forEach(item => {
+                    let htmlItem = `<div class='item-resultado'>`;
+                    if (item.tipo === "loja") {
+                        htmlItem += `<b>🏬 Loja:</b> ${item.loja}<br>🧑‍💼 Vend: ${item.vendedor}<br>📞 Tel: ${item.whatsapp}<br>📱 <a href="${item.link_zap}">Chamar no WhatsApp</a>`;
+                    } else {
+                        htmlItem += `<b>👤 Nome:</b> ${item.nome}<br>📅 Nasc: ${item.data} (${item.idade} anos)<br>📱 <a href="${item.link_zap}">Chamar no WhatsApp</a>`;
+                    }
+                    htmlItem += `</div>`;
+                    container.innerHTML += htmlItem;
+                });
+            } catch (e) {
+                container.innerHTML = "<div class='item-resultado'>⚠️ Erro de conexão com o TrueNAS. Verifique o No-IP ou a porta 8000.</div>";
+            }
+        }
+
+        async function fazerEnvioAPI(endpoint, payload) {
+            try {
+                tg.MainButton.showProgress(); // Mostra carregando no Telegram
+                let response = await fetch(`${API_URL}${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                let res = await response.json();
+                tg.MainButton.hideProgress();
+                
+                if(res.status === "success") {
+                    tg.showAlert("✅ Salvo com sucesso!");
+                    document.querySelectorAll('input, textarea').forEach(i => i.value = ""); // Limpa tela
+                } else {
+                    tg.showAlert("❌ Erro interno ao salvar.");
+                }
+            } catch(e) {
+                tg.MainButton.hideProgress();
+                tg.showAlert("❌ Falha de comunicação com o servidor TrueNAS.");
+            }
         }
 
         function enviarLoja() {
@@ -162,31 +175,23 @@
             let vend = document.getElementById('l_vend').value.trim();
             let whats = document.getElementById('l_whats').value.trim();
             let telLoja = document.getElementById('l_tel_loja').value.trim();
-            if(!loja || !vend || !whats || !telLoja) return tg.showAlert("⚠️ Preencha todos os campos!");
-            tg.sendData(JSON.stringify({ tipo: "nova_loja", loja: loja, vendedor: vend, whatsapp: whats, telefone_loja: telLoja }));
-            tg.close();
+            if(!loja || !vend || !whats) return tg.showAlert("⚠️ Preencha Nome, Vendedor e WhatsApp!");
+            fazerEnvioAPI('/api/nova_loja', { loja, vendedor: vend, whatsapp: whats, telefone_loja: telLoja });
         }
 
         function enviarAniv() {
             let nome = document.getElementById('a_nome').value.trim();
             let data = document.getElementById('a_data').value.trim();
-            let celularFormatado = document.getElementById('a_cel').value.trim();
-            if(!nome || !data.includes('/') || !celularFormatado) return tg.showAlert("⚠️ Preencha todos os campos!");
-            tg.sendData(JSON.stringify({ tipo: "novo_aniv", nome: nome, data: data, celular_formatado: celularFormatado, celular: celularFormatado }));
-            tg.close();
+            let cel = document.getElementById('a_cel').value.trim();
+            if(!nome || !data.includes('/')) return tg.showAlert("⚠️ Preencha Nome e Data!");
+            fazerEnvioAPI('/api/novo_aniv', { nome, data, celular_formatado: cel });
         }
 
         function enviarOS() {
             let nome = document.getElementById('o_nome').value.trim();
             let desc = document.getElementById('o_desc').value.trim();
-            if(!nome || !desc) return tg.showAlert("⚠️ Preencha os dados do serviço!");
-            tg.sendData(JSON.stringify({ tipo: "nova_os", nome: nome, descricao: desc }));
-            tg.close();
-        }
-
-        function solicitarDadosBot(acao) {
-            tg.sendData(JSON.stringify({ tipo: "acao_atalho", acao: acao }));
-            tg.close();
+            if(!nome || !desc) return tg.showAlert("⚠️ Preencha todos os campos!");
+            fazerEnvioAPI('/api/nova_os', { nome, descricao: desc });
         }
     </script>
 </body>
