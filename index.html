@@ -3,110 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Adicionar Loja ERP</title>
+    <title>Painel ERP</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-theme-bg-color, #ffffff);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--tg-theme-bg-color, #f4f4f5);
             color: var(--tg-theme-text-color, #000000);
             padding: 20px;
             margin: 0;
-        }
-        h2 {
             text-align: center;
-            margin-bottom: 20px;
-            color: var(--tg-theme-text-color, #333);
         }
-        .input-group {
-            margin-bottom: 15px;
+        h2 { margin-bottom: 5px; }
+        p { color: var(--tg-theme-hint-color, #888); font-size: 14px; margin-bottom: 25px; }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--tg-theme-hint-color, #888);
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--tg-theme-hint-color, #ccc);
-            border-radius: 8px;
-            background-color: var(--tg-theme-secondary-bg-color, #f4f4f5);
-            color: var(--tg-theme-text-color, #000);
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 15px;
-            background-color: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
+        
+        .card {
+            background-color: var(--tg-theme-secondary-bg-color, #ffffff);
+            padding: 20px 10px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             cursor: pointer;
-            margin-top: 10px;
+            transition: transform 0.2s;
+            border: 1px solid var(--tg-theme-hint-color, #eee);
         }
+        
+        .card:active { transform: scale(0.95); }
+        .card h3 { margin: 10px 0 0 0; font-size: 16px; color: var(--tg-theme-text-color, #333); }
+        .icon { font-size: 32px; }
+
+        /* Botão largo para ações principais */
+        .card.full { grid-column: span 2; background-color: var(--tg-theme-button-color, #3390ec); color: white;}
+        .card.full h3 { color: white; }
     </style>
 </head>
 <body>
 
-    <h2>🏬 Adicionar Loja/Vendedor</h2>
+    <h2>⚡ ERP System</h2>
+    <p>Selecione o módulo que deseja acessar</p>
 
-    <div class="input-group">
-        <label for="loja">Nome da Loja</label>
-        <input type="text" id="loja" placeholder="Ex: Decora Móveis">
+    <div class="menu-grid">
+        <div class="card" onclick="tg.showAlert('Módulo em construção!')">
+            <div class="icon">🏬</div>
+            <h3>Nova Loja</h3>
+        </div>
+
+        <div class="card" onclick="tg.showAlert('Módulo em construção!')">
+            <div class="icon">🎂</div>
+            <h3>Aniversário</h3>
+        </div>
+
+        <div class="card" onclick="tg.showAlert('Módulo em construção!')">
+            <div class="icon">💼</div>
+            <h3>Nova O.S.</h3>
+        </div>
+
+        <div class="card" onclick="tg.showAlert('Módulo em construção!')">
+            <div class="icon">📊</div>
+            <h3>Relatórios</h3>
+        </div>
+
+        <div class="card full" onclick="fecharApp()">
+            <div class="icon">❌</div>
+            <h3>Fechar Painel</h3>
+        </div>
     </div>
-
-    <div class="input-group">
-        <label for="vendedor">Nome do Vendedor</label>
-        <input type="text" id="vendedor" placeholder="Ex: Roberto Silva">
-    </div>
-
-    <div class="input-group">
-        <label for="ramal">Ramal (Opcional)</label>
-        <input type="number" id="ramal" placeholder="Ex: 105">
-    </div>
-
-    <div class="input-group">
-        <label for="celular">Celular com DDD</label>
-        <input type="tel" id="celular" placeholder="Ex: 11988887777">
-    </div>
-
-    <button onclick="enviarDados()">💾 Salvar no Sistema</button>
 
     <script>
-        // Inicializa a API do Telegram
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Faz o app abrir em tela cheia
+        tg.expand();
 
-        function enviarDados() {
-            // Coleta os valores digitados
-            const loja = document.getElementById('loja').value.trim();
-            const vendedor = document.getElementById('vendedor').value.trim();
-            const ramal = document.getElementById('ramal').value.trim() || "--";
-            const celular = document.getElementById('celular').value.trim();
-
-            // Validação simples
-            if(!loja || !vendedor || !celular) {
-                tg.showAlert("⚠️ Preencha a Loja, o Vendedor e o Celular!");
-                return;
-            }
-
-            // Monta o pacote de dados JSON
-            const dados = {
-                tipo: "nova_loja",
-                loja: loja,
-                vendedor: vendedor,
-                ramal: ramal,
-                celular: celular
-            };
-
-            // Envia silenciosamente para o bot.py e fecha a tela
-            tg.sendData(JSON.stringify(dados));
+        function fecharApp() {
             tg.close();
         }
     </script>
