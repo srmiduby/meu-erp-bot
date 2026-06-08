@@ -143,13 +143,16 @@
         function enviarAniv() {
             let nome = document.getElementById('a_nome').value.trim();
             let data = document.getElementById('a_data').value.trim();
+            let celularFormatado = document.getElementById('a_cel').value.trim();
+            
             if(!nome || !data.includes('/')) return tg.showAlert("⚠️ Preencha o nome e a data corretamente (DD/MM/AAAA)!");
             
             tg.sendData(JSON.stringify({
                 tipo: "novo_aniv", 
                 nome: nome, 
                 data: data, 
-                celular: document.getElementById('a_cel').value.trim()
+                celular_formatado: celularFormatado, // Envia o número bonitinho com parênteses e traço
+                celular: celularFormatado // Envia também para o Python gerar o link do zap
             }));
             tg.close();
         }
