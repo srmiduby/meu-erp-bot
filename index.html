@@ -16,10 +16,12 @@
         h2 { text-align: center; margin-bottom: 5px; }
         p.subtitle { text-align: center; color: var(--tg-theme-hint-color, #888); font-size: 14px; margin-bottom: 25px; }
         
+        /* Sistema de transição de telas (SPA) */
         .tela { display: none; animation: fadeIn 0.3s ease; }
         .tela.ativa { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Estilos do Menu Principal */
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .card { background-color: var(--tg-theme-secondary-bg-color, #ffffff); padding: 20px 10px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; text-align: center; border: 1px solid var(--tg-theme-hint-color, #eee); }
         .card:active { transform: scale(0.95); }
@@ -28,6 +30,7 @@
         .card.full { grid-column: span 2; background-color: #ff3b30; color: white; border: none; }
         .card.full h3 { color: white; }
 
+        /* Estilos dos Formulários */
         .input-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-size: 14px; font-weight: bold; color: var(--tg-theme-hint-color, #888); }
         input, textarea { width: 100%; padding: 12px; border: 1px solid var(--tg-theme-hint-color, #ccc); border-radius: 8px; background-color: var(--tg-theme-secondary-bg-color, #ffffff); color: var(--tg-theme-text-color, #000); font-size: 16px; box-sizing: border-box; }
@@ -44,8 +47,8 @@
             <div class="card" onclick="abrirTela('tela-loja')"><div class="icon">🏬</div><h3>Nova Loja</h3></div>
             <div class="card" onclick="abrirTela('tela-aniv')"><div class="icon">🎂</div><h3>Aniversário</h3></div>
             <div class="card" onclick="abrirTela('tela-os')"><div class="icon">💼</div><h3>Nova O.S.</h3></div>
-            <div class="card" onclick="tg.showAlert('Acesse os relatórios diretamente pelo botão do Menu no chat do bot.')"><div class="icon">📊</div><h3>Relatórios</h3></div>
-            <div class="card full" onclick="tg.close()"><div class="icon">✖️</div><h3>Fechar</h3></div>
+            <div class="card" onclick="tg.showAlert('Aceda aos relatórios diretamente pelo menu de botões no chat do Telegram.')"><div class="icon">📊</div><h3>Relatórios</h3></div>
+            <div class="card full" onclick="tg.close()"><div class="icon">✖️</div><h3>Fechar Painel</h3></div>
         </div>
     </div>
 
@@ -53,10 +56,8 @@
         <h2>🏬 Nova Loja</h2>
         <div class="input-group"><label>Nome da Loja</label><input type="text" id="l_nome" placeholder="Ex: Decora Móveis"></div>
         <div class="input-group"><label>Nome do Vendedor</label><input type="text" id="l_vend" placeholder="Ex: Roberto Silva"></div>
-        
         <div class="input-group"><label>WhatsApp do Vendedor</label><input type="tel" id="l_whats" placeholder="(62) 99999-9999" oninput="mascaraTelefone(this)"></div>
         <div class="input-group"><label>Telefone da Loja</label><input type="tel" id="l_tel_loja" placeholder="(62) 3333-4444" oninput="mascaraTelefone(this)"></div>
-        
         <button class="btn-salvar" onclick="enviarLoja()">💾 Salvar Loja</button>
         <button class="btn-voltar" onclick="abrirTela('tela-menu')">◀️ Voltar</button>
     </div>
@@ -64,7 +65,7 @@
     <div id="tela-aniv" class="tela">
         <h2>🎂 Novo Aniversariante</h2>
         <div class="input-group"><label>Nome Completo</label><input type="text" id="a_nome" placeholder="Ex: Carlos Andrade"></div>
-        <div class="input-group"><label>Data de Nascimento</label><input type="text" id="a_data" placeholder="DD/MM/AAAA"></div>
+        <div class="input-group"><label>Data de Nascimento</label><input type="text" id="a_data" placeholder="DD/MM/AAAA" oninput="mascaraData(this)"></div>
         <div class="input-group"><label>Celular c/ DDD (Opcional)</label><input type="tel" id="a_cel" placeholder="(62) 99999-9999" oninput="mascaraTelefone(this)"></div>
         <button class="btn-salvar" onclick="enviarAniv()">💾 Salvar Aniversário</button>
         <button class="btn-voltar" onclick="abrirTela('tela-menu')">◀️ Voltar</button>
@@ -72,30 +73,28 @@
 
     <div id="tela-os" class="tela">
         <h2>💼 Nova Ordem de Serviço</h2>
-        <div class="input-group"><label>Nome do Cliente</label><input type="text" id="o_nome" placeholder="Ex: Maria Souza"></div>
-        <div class="input-group"><label>Descrição do Serviço</label><textarea id="o_desc" rows="3" placeholder="Ex: Conserto de estofado..."></textarea></div>
+        <div class="input-group"><label>Nome do Serviço</label><input type="text" id="o_nome" placeholder="Ex: matriz, bico, afiação, corte"></div>
+        <div class="input-group"><label>Descrição do Serviço</label><textarea id="o_desc" rows="3" placeholder="Ex: fazer completa com arinhos 4 matriz"></textarea></div>
         <button class="btn-salvar" onclick="enviarOS()">💾 Criar O.S.</button>
         <button class="btn-voltar" onclick="abrirTela('tela-menu')">◀️ Voltar</button>
     </div>
 
     <script>
+        // Inicializa o ambiente do Telegram Mini App
         let tg = window.Telegram.WebApp;
         tg.expand();
 
+        // Controla a troca de ecrãs ocultando as inativas
         function abrirTela(idTela) {
             document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
             document.getElementById(idTela).classList.add('ativa');
         }
 
-        // 🪄 MÁSCARA AUTOMÁTICA DE TELEFONE (DDD + Número)
+        // 🪄 MÁSCARA INTELIGENTE DE TELEFONE (Fixo vs Celular automático)
         function mascaraTelefone(input) {
-            // Remove tudo que não for número
             let v = input.value.replace(/\D/g, ''); 
-            
-            // Limita a 11 números no máximo
             if (v.length > 11) v = v.slice(0, 11); 
             
-            // Aplica a formatação visual
             if (v.length > 10) {
                 v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
             } else if (v.length > 6) {
@@ -105,41 +104,67 @@
             } else if (v.length > 0) {
                 v = v.replace(/^(\d*)/, '($1');
             }
-            // Devolve o texto formatado para a tela
             input.value = v; 
         }
 
+        // 🪄 MÁSCARA AUTOMÁTICA DE DATA (DD/MM/AAAA)
+        function mascaraData(input) {
+            let v = input.value.replace(/\D/g, ''); 
+            if (v.length > 8) v = v.slice(0, 8); 
+            
+            if (v.length > 4) {
+                v = v.replace(/^(\d{2})(\d{2})(\d{0,4}).*/, '$1/$2/$3');
+            } else if (v.length > 2) {
+                v = v.replace(/^(\d{2})(\d{0,2})/, '$1/$2');
+            }
+            input.value = v; 
+        }
+
+        // Envio estruturado do formulário de Lojas
         function enviarLoja() {
             let loja = document.getElementById('l_nome').value.trim();
             let vend = document.getElementById('l_vend').value.trim();
             let whats = document.getElementById('l_whats').value.trim();
             let telLoja = document.getElementById('l_tel_loja').value.trim();
             
-            if(!loja || !vend || !whats || !telLoja) return tg.showAlert("⚠️ Preencha todos os campos da Loja!");
+            if(!loja || !vend || !whats || !telLoja) return tg.showAlert("⚠️ Por favor, preencha todos os campos da Loja!");
             
             tg.sendData(JSON.stringify({
-                tipo: "nova_loja", loja: loja, vendedor: vend, whatsapp: whats, telefone_loja: telLoja
+                tipo: "nova_loja", 
+                loja: loja, 
+                vendedor: vend, 
+                whatsapp: whats, 
+                telefone_loja: telLoja
             }));
             tg.close();
         }
 
+        // Envio estruturado do formulário de Aniversários
         function enviarAniv() {
             let nome = document.getElementById('a_nome').value.trim();
             let data = document.getElementById('a_data').value.trim();
-            if(!nome || !data.includes('/')) return tg.showAlert("⚠️ Preencha o nome e a data (DD/MM/AAAA)!");
+            if(!nome || !data.includes('/')) return tg.showAlert("⚠️ Preencha o nome e a data corretamente (DD/MM/AAAA)!");
             
             tg.sendData(JSON.stringify({
-                tipo: "novo_aniv", nome: nome, data: data, celular: document.getElementById('a_cel').value.trim()
+                tipo: "novo_aniv", 
+                nome: nome, 
+                data: data, 
+                celular: document.getElementById('a_cel').value.trim()
             }));
             tg.close();
         }
 
+        // Envio estruturado do formulário de Ordens de Serviço (Bloco de Notas)
         function enviarOS() {
             let nome = document.getElementById('o_nome').value.trim();
             let desc = document.getElementById('o_desc').value.trim();
-            if(!nome || !desc) return tg.showAlert("⚠️ Preencha o Cliente e a Descrição!");
+            if(!nome || !desc) return tg.showAlert("⚠️ Preencha o Nome do Serviço e a Descrição!");
             
-            tg.sendData(JSON.stringify({ tipo: "nova_os", nome: nome, descricao: desc }));
+            tg.sendData(JSON.stringify({ 
+                tipo: "nova_os", 
+                nome: nome, 
+                descricao: desc 
+            }));
             tg.close();
         }
     </script>
