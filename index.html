@@ -19,13 +19,11 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            /* Aumentamos o topo para 70px para desviar dos botões nativos do Telegram no iOS */
-            padding: 90px 20px 110px 20px; 
+            padding: 70px 20px 110px 20px; /* Recuo para iOS */
             margin: 0;
             overflow-x: hidden;
         }
 
-        /* Sistema de Abas com Animação Suave */
         .tela { display: none; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; }
         .tela.ativa { display: block; opacity: 1; transform: translateY(0); }
 
@@ -33,7 +31,6 @@
         .header h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
         .header p { margin: 4px 0 0 0; font-size: 14px; color: var(--hint); }
 
-        /* Dashboard Cards Atualizado */
         .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         .dash-card { background-color: var(--card-bg); padding: 14px; border-radius: 20px; box-shadow: 0 4px 15px var(--shadow); display: flex; flex-direction: column; gap: 8px; cursor: pointer; transition: transform 0.2s;}
         .dash-card:active { transform: scale(0.96); }
@@ -45,28 +42,23 @@
         .dash-card-full .dash-info p { color: rgba(255,255,255,0.8); }
         .dash-card-full h3 { font-size: 18px; }
 
-        /* Formulários Premium */
         .input-group { background-color: var(--card-bg); padding: 14px 18px; border-radius: 16px; margin-bottom: 12px; box-shadow: 0 2px 10px var(--shadow); border: 1px solid transparent; }
         .input-group:focus-within { border: 1px solid var(--accent); }
         .input-group label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
-        .input-group input, .input-group textarea, .input-group select { width: 100%; border: none; background: transparent; color: var(--text); font-size: 16px; outline: none; font-family: inherit; font-weight: 500; }
+        .input-group input, .input-group textarea { width: 100%; border: none; background: transparent; color: var(--text); font-size: 16px; outline: none; font-family: inherit; font-weight: 500; }
         .input-group input::placeholder, .input-group textarea::placeholder { color: var(--hint); font-weight: 400; }
 
         .btn-acao { width: 100%; padding: 16px; background-color: var(--accent); color: white; border: none; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 5px; box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3); transition: transform 0.2s; }
         .btn-acao:active { transform: scale(0.97); }
-        
         .btn-secundario { background-color: var(--card-bg); color: var(--text); border: 1px solid var(--hint); box-shadow: none; }
 
-        /* 🔥 DOCK FLUTUANTE 🔥 */
         .dock-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 450px; background-color: var(--card-bg); border-radius: 30px; display: flex; justify-content: space-between; padding: 8px 12px; box-shadow: 0 15px 35px var(--shadow); z-index: 1000; border: 1px solid rgba(0,0,0,0.05); }
         .dock-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; }
         .icon-box { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 20px; border-radius: 16px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: var(--hint); }
         .dock-item span { font-size: 10px; font-weight: 700; margin-top: 4px; color: var(--hint); transition: all 0.3s; }
-        
         .dock-item.active .icon-box { background-color: var(--accent); color: white; transform: translateY(-14px); box-shadow: 0 10px 20px rgba(0, 122, 255, 0.3); }
         .dock-item.active span { color: var(--accent); transform: translateY(-4px); }
 
-        /* Resultados */
         .lista-resultados { margin-top: 15px; }
         .item-resultado { background-color: var(--card-bg); padding: 16px; border-radius: 16px; margin-bottom: 12px; font-size: 14px; line-height: 1.6; border-left: 5px solid var(--accent); box-shadow: 0 4px 12px var(--shadow); }
         .item-resultado b { color: var(--text); }
@@ -87,29 +79,19 @@
                 <div style="font-size: 24px;">➔</div>
             </div>
             
-            <div class="dash-card" onclick="mudarAba('tela-gemini', document.getElementById('btn-home'))">
-                <div class="dash-icon">🤖</div>
-                <div class="dash-info"><p>I.A.</p><h3>Gemini</h3></div>
+            <div class="dash-card" onclick="mudarAba('tela-parafuso', document.getElementById('btn-home'))">
+                <div class="dash-icon" style="background: rgba(245, 158, 11, 0.1);">⚙️</div>
+                <div class="dash-info"><p>Usinagem</p><h3>Roscas & Brocas</h3></div>
             </div>
-            
+
             <div class="dash-card" onclick="mudarAba('tela-admin', document.getElementById('btn-admin'))">
                 <div class="dash-icon" style="background: rgba(255, 59, 48, 0.1);">🔒</div>
                 <div class="dash-info"><p>Gestão</p><h3>Painel Admin</h3></div>
             </div>
 
-            <div class="dash-card" onclick="mudarAba('tela-3d', document.getElementById('btn-home'))">
-                <div class="dash-icon">🧮</div>
-                <div class="dash-info"><p>Orçamento</p><h3>Impressão 3D</h3></div>
-            </div>
-
-            <div class="dash-card" onclick="mudarAba('tela-parafuso', document.getElementById('btn-home'))">
-                <div class="dash-icon">⚙️</div>
-                <div class="dash-info"><p>Técnico</p><h3>Parafuso/Rosca</h3></div>
-            </div>
-
             <div class="dash-card" onclick="mudarAba('tela-jogos', document.getElementById('btn-home'))">
-                <div class="dash-icon">🎮</div>
-                <div class="dash-info"><p>Lazer</p><h3>Jogos</h3></div>
+                <div class="dash-icon" style="background: rgba(52, 211, 153, 0.1);">🎮</div>
+                <div class="dash-info"><p>Lazer</p><h3>Meus Jogos</h3></div>
             </div>
         </div>
     </div>
@@ -120,7 +102,7 @@
             <label>O que você procura?</label>
             <div style="display: flex; gap: 8px;">
                 <input type="text" id="campo-busca" placeholder="Digite aqui..." onkeypress="verificarEnter(event)">
-                <button onclick="acionarBusca()" style="background-color: var(--accent); color: white; border: none; border-radius: 12px; padding: 0 18px; font-size: 18px; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3); transition: transform 0.2s;">🔍</button>
+                <button onclick="acionarBusca()" style="background-color: var(--accent); color: white; border: none; border-radius: 12px; padding: 0 18px; font-size: 18px; cursor: pointer;">🔍</button>
             </div>
         </div>
         <div id="container-resultados" class="lista-resultados"></div>
@@ -143,43 +125,32 @@
         <button class="btn-acao" onclick="enviarAniv()">Gravar Aniversário</button>
     </div>
 
+    <div id="tela-parafuso" class="tela">
+        <div class="header"><h2>Guia de Roscas</h2><p>Tabela técnica de furação e aperto</p></div>
+        <div class="input-group">
+            <label>Qual rosca você quer furar/passar macho?</label>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="p_medida" placeholder="Ex: M8, 1/4, M12..." onkeypress="verificarEnterParafuso(event)">
+                <button onclick="buscarParafuso()" style="background-color: var(--accent); color: white; border: none; border-radius: 12px; padding: 0 18px; font-size: 18px; cursor: pointer;">⚙️</button>
+            </div>
+        </div>
+        <div id="resultado-parafuso" class="lista-resultados"></div>
+    </div>
+
     <div id="tela-admin" class="tela">
-        <div class="header"><h2>Painel Admin</h2><p>Controle central do sistema</p></div>
-        
+        <div class="header"><h2>Painel Admin</h2><p>Controle central</p></div>
         <div class="input-group"><label>Novo Chamado / O.S.</label><input type="text" id="o_nome" placeholder="Serviço"><textarea id="o_desc" rows="2" placeholder="Detalhes da O.S." style="margin-top:10px;"></textarea></div>
         <button class="btn-acao" onclick="enviarOS()">Salvar Nova O.S.</button>
-        
         <br><br>
-        <button class="btn-acao btn-secundario">📄 Gerar PDFs Cadastrados</button>
+        <button class="btn-acao btn-secundario">📄 Baixar PDFs dos Cadastros</button>
         <button class="btn-acao btn-secundario">🔑 Gerenciar Acessos</button>
-    </div>
-
-    <div id="tela-gemini" class="tela">
-        <div class="header"><h2>I.A. Gemini</h2><p>Tire dúvidas inteligentes</p></div>
-        <div class="input-group"><label>Sua Pergunta</label><textarea rows="4" placeholder="Pergunte qualquer coisa ao Gemini..."></textarea></div>
-        <button class="btn-acao">✨ Perguntar à I.A.</button>
-        <div class="lista-resultados"></div>
-    </div>
-
-    <div id="tela-3d" class="tela">
-        <div class="header"><h2>Impressão 3D</h2><p>Calculadora de custos e orçamentos</p></div>
-        <div class="input-group"><label>Peso da Peça (gramas)</label><input type="number" placeholder="Ex: 150"></div>
-        <div class="input-group"><label>Tempo de Impressão (Horas)</label><input type="number" placeholder="Ex: 5"></div>
-        <button class="btn-acao">🧮 Calcular Preço Final</button>
-    </div>
-
-    <div id="tela-parafuso" class="tela">
-        <div class="header"><h2>Consulta Técnica</h2><p>Especificações de Parafusos/Roscas</p></div>
-        <div class="input-group"><label>Medida ou Tipo</label><input type="text" placeholder="Ex: M8, UNC 1/4"></div>
-        <button class="btn-acao">⚙️ Buscar Especificação</button>
     </div>
 
     <div id="tela-jogos" class="tela">
         <div class="header"><h2>Área de Jogos</h2><p>Seus links rápidos</p></div>
-        <button class="btn-acao btn-secundario">🕹️ Abrir Jogo 1</button>
-        <button class="btn-acao btn-secundario">🕹️ Abrir Jogo 2</button>
+        <button class="btn-acao btn-secundario" onclick="window.open('https://poki.com.br', '_blank')">🕹️ Abrir Poki Games</button>
+        <button class="btn-acao btn-secundario" onclick="window.open('https://www.crazygames.com.br', '_blank')">🏎️ Abrir Crazy Games</button>
     </div>
-
 
     <div class="dock-container">
         <button class="dock-item active" id="btn-home" onclick="mudarAba('tela-home', this)">
@@ -243,19 +214,14 @@
             input.value = v; 
         }
 
-        // Dispara a busca ao apertar "Enter" ou "Ir" no teclado do celular
-        function verificarEnter(event) {
-            if (event.key === "Enter") {
-                acionarBusca();
-            }
-        }
+        function verificarEnter(event) { if (event.key === "Enter") acionarBusca(); }
+        function verificarEnterParafuso(event) { if (event.key === "Enter") buscarParafuso(); }
 
         async function acionarBusca() {
             let campoInput = document.getElementById('campo-busca');
             let container = document.getElementById('container-resultados');
             let termoLimpo = campoInput.value.trim();
 
-            // Esconde o teclado do celular automaticamente
             campoInput.blur();
 
             if (termoLimpo.length < 2) { 
@@ -285,7 +251,44 @@
                     container.innerHTML += htmlItem;
                 });
             } catch (e) {
-                container.innerHTML = "<div class='item-resultado'>⚠️ Erro de conexão. Servidor offline.</div>";
+                container.innerHTML = "<div class='item-resultado'>⚠️ Erro de conexão com o servidor.</div>";
+            }
+        }
+
+        async function buscarParafuso() {
+            let campoInput = document.getElementById('p_medida');
+            let medida = campoInput.value.trim();
+            let divRes = document.getElementById('resultado-parafuso');
+
+            if(!medida) return tg.showAlert("⚠️ Digite a medida (ex: M8, 1/4)!");
+
+            campoInput.blur();
+            tg.MainButton.showProgress();
+            divRes.innerHTML = "<div style='text-align:center; padding:20px; color:var(--hint); font-size:14px;'>Consultando manual... ⏳</div>";
+            
+            try {
+                let res = await fetch(`${API_URL}/api/parafuso`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ medida: medida })
+                });
+                let data = await res.json();
+                tg.MainButton.hideProgress();
+
+                if(data.status === "success") {
+                    divRes.innerHTML = `
+                        <div class='item-resultado' style='border-left-color: #f59e0b;'>
+                            <b style='font-size: 18px;'>⚙️ Parafuso ${data.nome}</b><br><br>
+                            <b>Passo da Rosca:</b> <span style='color:var(--text); font-weight: 500;'>${data.specs.passo}</span><br>
+                            <b>Broca p/ Furo:</b> <span style='color:var(--text); font-weight: 500;'>${data.specs.broca}</span><br>
+                            <b>Chave de Aperto:</b> <span style='color:var(--text); font-weight: 500;'>${data.specs.chave}</span>
+                        </div>`;
+                } else {
+                    divRes.innerHTML = `<div class='item-resultado' style='border-left-color: red; text-align:center;'>❌<br>${data.message}</div>`;
+                }
+            } catch(e) {
+                tg.MainButton.hideProgress();
+                divRes.innerHTML = "<div class='item-resultado' style='border-left-color: red;'>⚠️ Servidor TrueNAS Offline.</div>";
             }
         }
 
