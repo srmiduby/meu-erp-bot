@@ -116,7 +116,13 @@
 
     <div id="tela-busca" class="tela">
         <div class="header"><h2>Consulta Central</h2><p>Busque clientes, lojas ou serviços</p></div>
-        <div class="input-group"><label>O que você procura?</label><input type="text" id="campo-busca" placeholder="Digite aqui..." oninput="executarBuscaInterna(this.value)"></div>
+        <div class="input-group">
+            <label>O que você procura?</label>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="campo-busca" placeholder="Digite aqui..." onkeypress="verificarEnter(event)">
+                <button onclick="acionarBusca()" style="background-color: var(--accent); color: white; border: none; border-radius: 12px; padding: 0 18px; font-size: 18px; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3); transition: transform 0.2s;">🔍</button>
+            </div>
+        </div>
         <div id="container-resultados" class="lista-resultados"></div>
     </div>
 
@@ -237,40 +243,50 @@
             input.value = v; 
         }
 
-        let timeoutBusca = null;
+        // Dispara a busca ao apertar "Enter" ou "Ir" no teclado do celular
+        function verificarEnter(event) {
+            if (event.key === "Enter") {
+                acionarBusca();
+            }
+        }
 
-        async function executarBuscaInterna(termo) {
+        async function acionarBusca() {
+            let campoInput = document.getElementById('campo-busca');
             let container = document.getElementById('container-resultados');
-            let termoLimpo = termo.trim();
+            let termoLimpo = campoInput.value.trim();
 
-            clearTimeout(timeoutBusca);
-            if (termoLimpo.length < 2) { container.innerHTML = ""; return; }
+            // Esconde o teclado do celular automaticamente
+            campoInput.blur();
 
-            timeoutBusca = setTimeout(async () => {
-                container.innerHTML = "<div style='text-align:center; padding:20px; color:var(--hint); font-size:14px;'>Buscando... ⏳</div>";
-                try {
-                    let response = await fetch(`${API_URL}/api/buscar?query=${encodeURIComponent(termoLimpo)}`);
-                    let resultados = await response.json();
-                    
-                    container.innerHTML = ""; 
-                    if (resultados.length === 0) {
-                        container.innerHTML = "<div class='item-resultado' style='text-align:center;'>❌<br>Nenhum registro encontrado.</div>"; return;
-                    }
+            if (termoLimpo.length < 2) { 
+                container.innerHTML = "<div style='text-align:center; padding:20px; color:var(--hint); font-size:14px;'>⚠️ Digite pelo menos 2 letras.</div>"; 
+                return; 
+            }
 
-                    resultados.forEach(item => {
-                        let htmlItem = `<div class='item-resultado'>`;
-                        if (item.tipo === "loja") {
-                            htmlItem += `<b>🏬 ${item.loja}</b><br><span style="color:var(--hint); font-size:12px;">Vendedor: ${item.vendedor}</span><br>📞 Fixo: ${item.whatsapp}<br><a href="${item.link_zap}">💬 Chamar no WhatsApp</a>`;
-                        } else {
-                            htmlItem += `<b>👤 ${item.nome}</b><br><span style="color:var(--hint); font-size:12px;">Data de Nasc: ${item.data} (${item.idade} anos)</span><br><a href="${item.link_zap}">🎉 Mandar Parabéns</a>`;
-                        }
-                        htmlItem += `</div>`;
-                        container.innerHTML += htmlItem;
-                    });
-                } catch (e) {
-                    container.innerHTML = "<div class='item-resultado'>⚠️ Erro de conexão. Servidor offline.</div>";
+            container.innerHTML = "<div style='text-align:center; padding:20px; color:var(--hint); font-size:14px;'>Buscando... ⏳</div>";
+            
+            try {
+                let response = await fetch(`${API_URL}/api/buscar?query=${encodeURIComponent(termoLimpo)}`);
+                let resultados = await response.json();
+                
+                container.innerHTML = ""; 
+                if (resultados.length === 0) {
+                    container.innerHTML = "<div class='item-resultado' style='text-align:center;'>❌<br>Nenhum registro encontrado.</div>"; return;
                 }
-            }, 500); 
+
+                resultados.forEach(item => {
+                    let htmlItem = `<div class='item-resultado'>`;
+                    if (item.tipo === "loja") {
+                        htmlItem += `<b>🏬 ${item.loja}</b><br><span style="color:var(--hint); font-size:12px;">Vendedor: ${item.vendedor}</span><br>📞 Fixo: ${item.whatsapp}<br><a href="${item.link_zap}">💬 Chamar no WhatsApp</a>`;
+                    } else {
+                        htmlItem += `<b>👤 ${item.nome}</b><br><span style="color:var(--hint); font-size:12px;">Data de Nasc: ${item.data} (${item.idade} anos)</span><br><a href="${item.link_zap}">🎉 Mandar Parabéns</a>`;
+                    }
+                    htmlItem += `</div>`;
+                    container.innerHTML += htmlItem;
+                });
+            } catch (e) {
+                container.innerHTML = "<div class='item-resultado'>⚠️ Erro de conexão. Servidor offline.</div>";
+            }
         }
 
         async function fazerEnvioAPI(endpoint, payload) {
