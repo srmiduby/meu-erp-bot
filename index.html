@@ -108,7 +108,7 @@
                 <div class="dash-info"><p>Vendas</p><h3>Gerar Orçamento</h3></div>
             </div>
 
-            <div class="dash-card" onclick="acionarBot('menu_jogos')">
+            <div class="dash-card" onclick="mudarAba('tela-jogos', document.getElementById('btn-home'))">
                 <div class="dash-icon" style="background: rgba(175, 82, 222, 0.15);">🎮</div>
                 <div class="dash-info"><p>Lazer</p><h3>Meus Jogos</h3></div>
             </div>
@@ -166,6 +166,7 @@
                 <button onclick="buscarParafuso()" style="background-color: var(--accent); color: white; border: none; border-radius: 14px; padding: 0 20px; font-size: 18px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,122,255,0.3);">⚙️</button>
             </div>
         </div>
+        <div id="resultado-parafuso" class="lista-resultados"></div>
     </div>
 
     <div id="tela-orcamento" class="tela">
@@ -175,6 +176,12 @@
         <div class="input-group"><label>Descrição do Serviço</label><textarea id="orc_desc" rows="2" placeholder="Ex: Confecção de 40 arcos"></textarea></div>
         <div class="input-group"><label>Valor Total (R$)</label><input type="number" id="orc_valor" placeholder="Ex: 450"></div>
         <button class="btn-acao" onclick="gerarOrçamentoInApp()">📋 Gerar e Copiar Orçamento</button>
+    </div>
+
+    <div id="tela-jogos" class="tela">
+        <div class="header"><h2>Área de Jogos</h2><p>Relaxe um pouco</p></div>
+        <button class="btn-acao btn-secundario" style="padding: 20px; font-size: 18px;" onclick="window.open('https://poki.com.br', '_blank')">🕹️ Abrir Poki Games</button>
+        <button class="btn-acao btn-secundario" style="padding: 20px; font-size: 18px;" onclick="window.open('https://www.crazygames.com.br', '_blank')">🏎️ Abrir Crazy Games</button>
     </div>
 
     <div class="dock-container">
@@ -272,19 +279,46 @@
             }
         }
 
-        // BUSCA DE PARAFUSOS ENVIADA DIRETO PRO BOT
-        function buscarParafuso() {
+        // Alterado para buscar via API em silêncio
+        async function buscarParafuso() {
             tg.HapticFeedback.impactOccurred('medium');
             let campoInput = document.getElementById('p_medida');
-            let medida = campoInput.value.trim();
+            let medida = campoInput.value.trim().toUpperCase();
+            let divRes = document.getElementById('resultado-parafuso');
 
             if(!medida) { 
                 tg.HapticFeedback.notificationOccurred('error'); 
                 return tg.showAlert("⚠️ Digite a medida (ex: M8, 1/4)!"); 
             }
 
-            // Manda o texto digitado direto pro bot e fecha o app!
-            tg.sendData(JSON.stringify({tipo: 'busca_rosca', termo: medida}));
+            campoInput.blur();
+            divRes.innerHTML = "<div style='text-align:center; padding:30px;'><div class='loader'></div><p style='color:var(--hint); font-size:12px; margin-top:10px;'>Consultando banco de dados...</p></div>";
+            
+            try {
+                let res = await fetch(`${API_URL}/api/parafuso`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ medida: medida })
+                });
+                let data = await res.json();
+
+                if(data.status === "success") {
+                    tg.HapticFeedback.notificationOccurred('success');
+                    divRes.innerHTML = `
+                        <div class='item-resultado' style='border-left-color: var(--warning);'>
+                            <b style='font-size: 18px;'>⚙️ Parafuso ${data.nome}</b><br><br>
+                            <b>Passo da Rosca:</b> <span style='color:var(--text); font-weight: 600;'>${data.specs.passo}</span><br>
+                            <b>Broca p/ Furo:</b> <span style='color:var(--text); font-weight: 600;'>${data.specs.broca}</span><br>
+                            <b>Chave de Aperto:</b> <span style='color:var(--text); font-weight: 600;'>${data.specs.chave}</span>
+                        </div>`;
+                } else {
+                    tg.HapticFeedback.notificationOccurred('error');
+                    divRes.innerHTML = `<div class='item-resultado' style='border-left-color: var(--danger); text-align:center;'>❌<br>Medida não encontrada.</div>`;
+                }
+            } catch(e) {
+                tg.HapticFeedback.notificationOccurred('error');
+                divRes.innerHTML = "<div class='item-resultado' style='border-left-color: var(--danger);'>⚠️ Falha na API.</div>";
+            }
         }
 
         function gerarOrçamentoInApp() {
