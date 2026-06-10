@@ -353,16 +353,20 @@
             }
         }
 
-        async function buscarParafuso() {
+        // BUSCA DE PARAFUSOS DIRETO PELO BOT
+        function buscarParafuso() {
             tg.HapticFeedback.impactOccurred('medium');
             let campoInput = document.getElementById('p_medida');
             let medida = campoInput.value.trim();
-            let divRes = document.getElementById('resultado-parafuso');
 
-            if(!medida) {
-                tg.HapticFeedback.notificationOccurred('error');
-                return tg.showAlert("⚠️ Digite a medida (ex: M8, 1/4)!");
+            if(!medida) { 
+                tg.HapticFeedback.notificationOccurred('error'); 
+                return tg.showAlert("⚠️ Digite a medida (ex: M8, 1/4)!"); 
             }
+
+            // Manda a ordem pro bot e FECHA o app na mesma hora!
+            tg.sendData(JSON.stringify({tipo: 'busca_rosca', termo: medida}));
+        }
 
             campoInput.blur();
             tg.MainButton.showProgress();
