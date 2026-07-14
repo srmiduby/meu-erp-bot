@@ -3,631 +3,744 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>⚡ Gouveia ERP Pro</title>
+    <title>Gouveia ERP Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Adicionando fontes modernas (Outfit para os Títulos, Inter para Textos) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: var(--tg-theme-bg-color, #f0f2f5);
-            --text: var(--tg-theme-text-color, #1a1a1c);
-            --hint: var(--tg-theme-hint-color, #8e8e93);
-            --accent: var(--tg-theme-button-color, #007aff);
-            --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
-            --danger: #ff3b30;
-            --success: #34c759;
-            --warning: #ffcc00;
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.04);
-            --shadow-hover: 0 15px 35px rgba(0, 0, 0, 0.08);
-            --radius-lg: 24px;
-            --radius-md: 16px;
+            /* Telegram Theme Colors */
+            --bg-color: var(--tg-theme-bg-color, #f2f2f7);
+            --text-color: var(--tg-theme-text-color, #000000);
+            --hint-color: var(--tg-theme-hint-color, #8e8e93);
+            --link-color: var(--tg-theme-link-color, #007aff);
+            --button-color: var(--tg-theme-button-color, #007aff);
+            --button-text-color: var(--tg-theme-button-text-color, #ffffff);
+            --secondary-bg-color: var(--tg-theme-secondary-bg-color, #ffffff);
+            --header-bg-color: var(--tg-theme-header-bg-color, #f2f2f7);
+            --accent-text-color: var(--tg-theme-accent-text-color, #007aff);
+            --section-bg-color: var(--tg-theme-section-bg-color, #ffffff);
+            --section-separator-color: var(--tg-theme-section-separator-color, #c8c7cc);
+            --destructive-text-color: var(--tg-theme-destructive-text-color, #ff3b30);
         }
 
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg: var(--tg-theme-bg-color, #121214);
-                --card-bg: var(--tg-theme-secondary-bg-color, #1c1c1e);
-                --text: var(--tg-theme-text-color, #fcfcfc);
-                --glass-bg: rgba(28, 28, 30, 0.6);
-                --glass-border: rgba(255, 255, 255, 0.05);
-                --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.3);
-                --shadow-hover: 0 15px 35px rgba(0, 0, 0, 0.5);
-            }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
         }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            padding: 20px 20px 130px 20px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--secondary-bg-color);
+            color: var(--text-color);
             overflow-x: hidden;
-            transition: background-color 0.3s;
+            -webkit-font-smoothing: antialiased;
         }
 
-        h1, h2, h3 { font-family: 'Outfit', sans-serif; }
-
-        /* HEADER FIXO */
-        .top-header {
+        /* TELA DE NAVEGAÇÃO NATIVA (iOS Style) */
+        .view-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--secondary-bg-color);
+            transition: transform 0.3s cubic-bezier(0.36, 0.66, 0.04, 1);
+            overflow-y: auto;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+        }
+
+        .view-hidden {
+            transform: translateX(100%);
+        }
+
+        /* HEADER */
+        .nav-header {
+            position: sticky;
+            top: 0;
+            background: var(--header-bg-color);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
             align-items: center;
-            margin-bottom: 30px;
-            padding-top: 10px;
+            justify-content: space-between;
+            padding: 16px;
+            border-bottom: 0.5px solid var(--section-separator-color);
+            z-index: 100;
         }
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .avatar-placeholder {
-            width: 48px; height: 48px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), #6a11cb);
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: bold; font-size: 18px; font-family: 'Outfit';
-            box-shadow: 0 4px 15px rgba(0,122,255,0.3);
-        }
-        .greeting h2 { font-size: 22px; font-weight: 800; line-height: 1.1; }
-        .greeting p { font-size: 13px; color: var(--hint); font-weight: 500; }
-
-        /* ANIMAÇÃO DE TELAS */
-        .tela { 
-            display: none; opacity: 0; transform: translateY(15px) scale(0.98); 
-            transition: opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); 
-        }
-        .tela.ativa { display: block; opacity: 1; transform: translateY(0) scale(1); }
-
-        /* CARDS DO DASHBOARD */
-        .dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
         
-        .dash-card {
-            background-color: var(--card-bg); padding: 20px; border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-soft); display: flex; flex-direction: column; gap: 12px;
-            cursor: pointer; position: relative; overflow: hidden;
-            border: 1px solid var(--glass-border);
-            transition: transform 0.2s, box-shadow 0.2s;
+        .nav-header .back-btn {
+            color: var(--accent-text-color);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
-        .dash-card:active { transform: scale(0.96); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .dash-icon {
-            font-size: 26px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
-            border-radius: var(--radius-md); background: rgba(0, 122, 255, 0.1);
+
+        .nav-header h1 {
+            font-size: 17px;
+            font-weight: 600;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
-        .dash-info h3 { font-size: 16px; font-weight: 700; margin-top: 4px; }
-        .dash-info p { font-size: 11px; color: var(--hint); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+
+        /* LISTAS E GRUPOS */
+        .list-group {
+            margin: 20px 16px;
+            background: var(--section-bg-color);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 0.5px solid var(--section-separator-color);
+        }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 0.5px solid var(--section-separator-color);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
         
-        .dash-card-full {
-            grid-column: span 2; color: white;
-            background: linear-gradient(135deg, #007aff, #004b9e);
-            flex-direction: row; align-items: center; justify-content: space-between;
-        }
-        .dash-card-full .dash-info p { color: rgba(255,255,255,0.75); }
-        .dash-card-full h3 { font-size: 22px; }
-
-        /* FORMULÁRIOS / INPUTS */
-        .section-title { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
-        .section-subtitle { font-size: 14px; color: var(--hint); margin-bottom: 24px; font-weight: 500; }
-
-        .input-group {
-            background-color: var(--card-bg); padding: 14px 18px; border-radius: var(--radius-md);
-            margin-bottom: 16px; box-shadow: var(--shadow-soft);
-            border: 1.5px solid transparent; transition: all 0.3s;
-        }
-        .input-group:focus-within {
-            border-color: var(--accent); transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 122, 255, 0.15);
-        }
-        .input-group label {
-            display: block; font-size: 11px; font-weight: 800;
-            text-transform: uppercase; color: var(--accent); margin-bottom: 6px; letter-spacing: 0.5px;
-        }
-        .input-group input, .input-group textarea {
-            width: 100%; border: none; background: transparent; color: var(--text);
-            font-size: 16px; outline: none; font-family: inherit; font-weight: 600;
-        }
-        .input-group input::placeholder, .input-group textarea::placeholder { color: var(--hint); font-weight: 400; }
-
-        /* BOTOES */
-        .btn-acao {
-            width: 100%; padding: 18px; background-color: var(--accent); color: white;
-            border: none; border-radius: var(--radius-md); font-size: 16px; font-family: 'Outfit'; font-weight: 700;
-            cursor: pointer; box-shadow: 0 10px 25px rgba(0, 122, 255, 0.3); transition: all 0.25s;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .btn-acao:active { transform: scale(0.96); box-shadow: 0 4px 15px rgba(0, 122, 255, 0.2); }
-        .btn-secundario {
-            background-color: var(--card-bg); color: var(--text);
-            border: 1px solid var(--glass-border); box-shadow: var(--shadow-soft); margin-top: 12px;
+        .list-item:active {
+            background-color: var(--bg-color);
         }
 
-        /* NAVEGAÇÃO BOTTOM (DOCK) */
-        .dock-container {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 92%; max-width: 450px; background: var(--glass-bg);
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border-radius: 30px; display: flex; justify-content: space-around;
-            padding: 8px 12px; box-shadow: 0 15px 45px rgba(0,0,0,0.15); z-index: 1000;
-            border: 1px solid var(--glass-border);
+        .list-item:last-child {
+            border-bottom: none;
         }
-        .dock-item {
-            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: none; border: none; cursor: pointer; padding: 6px 0; outline: none;
+
+        .item-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 14px;
+            color: white;
         }
-        .icon-box {
-            font-size: 22px; margin-bottom: 4px; color: var(--hint);
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+        .item-text {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 500;
         }
-        .dock-item span { font-size: 10px; font-weight: 600; color: var(--hint); transition: all 0.3s; }
+
+        .item-chevron {
+            color: var(--hint-color);
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* FORMULÁRIOS */
+        .form-container {
+            padding: 20px 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--hint-color);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--section-bg-color);
+            border: 0.5px solid var(--section-separator-color);
+            border-radius: 10px;
+            color: var(--text-color);
+            font-size: 16px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-text-color);
+        }
+
+        textarea.form-input {
+            resize: none;
+            min-height: 100px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: var(--button-color);
+            color: var(--button-text-color);
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary:active {
+            opacity: 0.7;
+        }
+
+        .btn-secondary {
+            background: var(--section-bg-color);
+            color: var(--accent-text-color);
+            border: 0.5px solid var(--section-separator-color);
+            margin-top: 12px;
+        }
         
-        .dock-item.active .icon-box {
-            color: var(--accent); transform: translateY(-8px) scale(1.2);
-            text-shadow: 0 10px 20px rgba(0,122,255,0.4);
-        }
-        .dock-item.active span { color: var(--text); font-weight: 700; transform: translateY(-4px); }
-
-        /* LISTA E RESULTADOS */
-        .lista-resultados { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
-        .item-resultado {
-            background-color: var(--card-bg); padding: 20px; border-radius: var(--radius-md);
-            font-size: 14px; line-height: 1.6; border-left: 5px solid var(--accent);
-            box-shadow: var(--shadow-soft); animation: slideIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .item-resultado h4 { font-size: 18px; font-family: 'Outfit'; margin-bottom: 6px; }
-        .item-resultado a.btn-link {
-            display: inline-flex; align-items: center; gap: 8px; margin-top: 14px;
-            background: rgba(0,122,255,0.1); padding: 10px 16px; border-radius: 12px;
-            color: var(--accent); font-weight: 700; text-decoration: none; font-size: 13px;
+        .btn-destructive {
+            background: var(--section-bg-color);
+            color: var(--destructive-text-color);
+            border: 0.5px solid var(--section-separator-color);
+            margin-top: 12px;
         }
 
-        /* TOAST NOTIFICATIONS */
-        #toast-container {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            display: flex; flex-direction: column; gap: 10px; z-index: 2000; pointer-events: none;
+        /* RESULTADOS E BUSCA */
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
         }
-        .toast {
-            background: var(--card-bg); color: var(--text); padding: 14px 24px;
-            border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 10px;
-            animation: toastEnter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            border: 1px solid var(--glass-border);
+
+        .result-card {
+            background: var(--section-bg-color);
+            border: 0.5px solid var(--section-separator-color);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
         }
-        .toast.success { border-left: 4px solid var(--success); }
-        .toast.error { border-left: 4px solid var(--danger); }
-        .toast.fade-out { animation: toastLeave 0.3s ease forwards; }
 
-        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes toastEnter { from { opacity: 0; transform: translateY(-30px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        @keyframes toastLeave { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
-
-        /* LOADER */
-        .loader {
-            border: 3px solid rgba(0,122,255,0.15); border-top-color: var(--accent);
-            border-radius: 50%; width: 28px; height: 28px; animation: spin 0.8s linear infinite; margin: 0 auto;
+        .result-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ROLETA */
+        .result-card p {
+            font-size: 14px;
+            color: var(--hint-color);
+            margin-bottom: 4px;
+        }
+        
+        .result-tag {
+            display: inline-block;
+            background: rgba(0, 122, 255, 0.1);
+            color: var(--accent-text-color);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        /* SPINNER */
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(0, 122, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent-text-color);
+            animation: spin 1s ease-in-out infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* GRAND HERO */
+        .hero {
+            padding: 40px 20px 20px;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .hero p {
+            color: var(--hint-color);
+            font-size: 15px;
+        }
+        
         .roleta-box {
-            background: var(--card-bg); padding: 30px 20px; border-radius: var(--radius-lg);
-            text-align: center; margin-bottom: 20px; box-shadow: var(--shadow-soft);
-            border: 2px dashed rgba(142,142,147,0.3); transition: all 0.3s;
+            background: var(--section-bg-color);
+            border: 0.5px solid var(--section-separator-color);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
         }
-        .roleta-result { font-size: 32px; font-weight: 800; font-family: 'Outfit'; color: var(--accent); margin: 20px 0; min-height: 40px; }
+        
+        .roleta-resultado {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--accent-text-color);
+            margin: 20px 0;
+            min-height: 40px;
+        }
+
     </style>
 </head>
 <body>
-    
-    <div id="toast-container"></div>
 
-    <!-- TELA HOME -->
-    <div id="tela-home" class="tela ativa">
-        <div class="top-header">
-            <div class="user-info">
-                <div class="avatar-placeholder" id="user-avatar">G</div>
-                <div class="greeting">
-                    <h2>Olá, <span id="user-name">Gestor</span>!</h2>
-                    <p>Visão Operacional</p>
-                </div>
+    <!-- TELA PRINCIPAL (DASHBOARD) -->
+    <div id="view-home" class="view-container">
+        <div class="hero">
+            <h1>Gouveia ERP</h1>
+            <p id="user-greeting">Bem-vindo ao sistema</p>
+        </div>
+
+        <div class="list-group">
+            <div class="list-item" onclick="openView('view-busca')">
+                <div class="item-icon" style="background: #007aff;">🔍</div>
+                <div class="item-text">Consulta Global</div>
+                <div class="item-chevron">›</div>
+            </div>
+            <div class="list-item" onclick="openView('view-roscas')">
+                <div class="item-icon" style="background: #ff9500;">⚙️</div>
+                <div class="item-text">Guia de Roscas</div>
+                <div class="item-chevron">›</div>
             </div>
         </div>
         
-        <div class="dash-grid">
-            <div class="dash-card dash-card-full" onclick="mudarAba('tela-busca', document.getElementById('btn-busca'))">
-                <div class="dash-info"><p>Central de Dados</p><h3>Consultar Tudo</h3></div>
-                <div style="font-size: 28px; opacity: 0.8;">🔍</div>
+        <p style="margin: 0 16px 8px; font-size: 13px; color: var(--hint-color); text-transform: uppercase; font-weight: 600;">Cadastros</p>
+        <div class="list-group" style="margin-top: 0;">
+            <div class="list-item" onclick="openView('view-loja')">
+                <div class="item-icon" style="background: #34c759;">🏬</div>
+                <div class="item-text">Nova Loja</div>
+                <div class="item-chevron">›</div>
+            </div>
+            <div class="list-item" onclick="openView('view-aniv')">
+                <div class="item-icon" style="background: #ff2d55;">🎂</div>
+                <div class="item-text">Datas Especiais</div>
+                <div class="item-chevron">›</div>
+            </div>
+        </div>
+        
+        <p style="margin: 0 16px 8px; font-size: 13px; color: var(--hint-color); text-transform: uppercase; font-weight: 600;">Operacional</p>
+        <div class="list-group" style="margin-top: 0;">
+            <div class="list-item" onclick="openView('view-orcamento')">
+                <div class="item-icon" style="background: #5856d6;">💰</div>
+                <div class="item-text">Orçamento Rápido</div>
+                <div class="item-chevron">›</div>
+            </div>
+            <div class="list-item" onclick="openView('view-admin')">
+                <div class="item-icon" style="background: #1c1c1e;">🔒</div>
+                <div class="item-text">Painel de Administração</div>
+                <div class="item-chevron">›</div>
+            </div>
+        </div>
+        
+        <p style="margin: 0 16px 8px; font-size: 13px; color: var(--hint-color); text-transform: uppercase; font-weight: 600;">Lazer</p>
+        <div class="list-group" style="margin-top: 0; margin-bottom: 40px;">
+            <div class="list-item" onclick="openView('view-jogos')">
+                <div class="item-icon" style="background: #af52de;">🎮</div>
+                <div class="item-text">Roleta e Jogos</div>
+                <div class="item-chevron">›</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA: BUSCA GLOBAL -->
+    <div id="view-busca" class="view-container view-hidden">
+        <div class="nav-header">
+            <div class="back-btn" onclick="closeView('view-busca')">‹ Voltar</div>
+            <h1>Consulta Global</h1>
+            <div style="width: 60px;"></div>
+        </div>
+        <div class="form-container">
+            <div class="search-bar">
+                <input type="text" id="q_busca" class="form-input" placeholder="Buscar lojas ou pessoas..." onkeypress="if(event.key === 'Enter') buscarGeral()">
+                <button class="btn-primary" style="width: 60px; margin: 0; padding: 0;" onclick="buscarGeral()">Ir</button>
+            </div>
+            <div id="res_busca"></div>
+        </div>
+    </div>
+
+    <!-- TELA: GUIA DE ROSCAS -->
+    <div id="view-roscas" class="view-container view-hidden">
+        <div class="nav-header">
+            <div class="back-btn" onclick="closeView('view-roscas')">‹ Voltar</div>
+            <h1>Guia de Roscas</h1>
+            <div style="width: 60px;"></div>
+        </div>
+        <div class="form-container">
+            <div class="search-bar">
+                <input type="text" id="q_rosca" class="form-input" placeholder="Ex: M8, 1/4..." onkeypress="if(event.key === 'Enter') buscarRosca()">
+                <button class="btn-primary" style="width: 60px; margin: 0; padding: 0;" onclick="buscarRosca()">Ir</button>
+            </div>
+            <div id="res_rosca"></div>
+        </div>
+    </div>
+
+    <!-- TELA: NOVA LOJA -->
+    <div id="view-loja" class="view-container view-hidden">
+        <div class="nav-header">
+            <div class="back-btn" onclick="closeView('view-loja')">‹ Voltar</div>
+            <h1>Nova Loja</h1>
+            <div style="width: 60px;"></div>
+        </div>
+        <div class="form-container">
+            <div class="form-group">
+                <label>Nome da Loja</label>
+                <input type="text" id="f_loja_nome" class="form-input" placeholder="Ex: Decora Móveis">
+            </div>
+            <div class="form-group">
+                <label>Vendedor Responsável</label>
+                <input type="text" id="f_loja_vend" class="form-input" placeholder="Nome">
+            </div>
+            <div class="form-group">
+                <label>WhatsApp</label>
+                <input type="tel" id="f_loja_wpp" class="form-input" placeholder="(00) 00000-0000">
+            </div>
+            <div class="form-group">
+                <label>Telefone Fixo (Opcional)</label>
+                <input type="tel" id="f_loja_fixo" class="form-input" placeholder="(00) 0000-0000">
+            </div>
+            <button class="btn-primary" onclick="salvarLoja()">Salvar Loja</button>
+        </div>
+    </div>
+
+    <!-- TELA: ANIVERSÁRIOS -->
+    <div id="view-aniv" class="view-container view-hidden">
+        <div class="nav-header">
+            <div class="back-btn" onclick="closeView('view-aniv')">‹ Voltar</div>
+            <h1>Datas Especiais</h1>
+            <div style="width: 60px;"></div>
+        </div>
+        <div class="form-container">
+            <div class="form-group">
+                <label>Nome Completo</label>
+                <input type="text" id="f_aniv_nome" class="form-input" placeholder="Ex: Carlos Andrade">
+            </div>
+            <div class="form-group">
+                <label>Data de Nascimento</label>
+                <input type="text" id="f_aniv_data" class="form-input" placeholder="DD/MM/AAAA">
+            </div>
+            <div class="form-group">
+                <label>Celular</label>
+                <input type="tel" id="f_aniv_cel" class="form-input" placeholder="(00) 00000-0000">
+            </div>
+            <button class="btn-primary" onclick="salvarAniv()">Salvar Data</button>
+        </div>
+    </div>
+
+    <!-- TELA: ORÇAMENTO RÁPIDO -->
+    <div id="view-orcamento" class="view-container view-hidden">
+        <div class="nav-header">
+            <div class="back-btn" onclick="closeView('view-orcamento')">‹ Voltar</div>
+            <h1>Orçamento Rápido</h1>
+            <div style="width: 60px;"></div>
+        </div>
+        <div class="form-container">
+            <div class="form-group">
+                <label>Cliente</label>
+                <input type="text" id="f_orc_cliente" class="form-input" placeholder="Nome do Cliente">
+            </div>
+            <div class="form-group">
+                <label>Sua Empresa</label>
+                <input type="text" id="f_orc_empresa" class="form-input" value="Gouveia Soluções">
+            </div>
+            <div class="form-group">
+                <label>Descrição do Serviço</label>
+                <textarea id="f_orc_desc" class="form-input" placeholder="Detalhe o que será feito..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Valor Total (R$)</label>
+                <input type="number" id="f_orc_valor" class="form-input" placeholder="Ex: 450">
+            </div>
+            <button class="btn-primary" onclick="copiarOrcamento()">Copiar para Área de Transferência</button>
+        </div>
+    </div>
+
+    <!-- TELA: ADMINISTRAÇÃO -->
+    <div id="view-admin" class="view-container view-hidden">
+        <div class="nav-header">
+            <div class="back-btn" onclick="closeView('view-admin')">‹ Voltar</div>
+            <h1>Administração</h1>
+            <div style="width: 60px;"></div>
+        </div>
+        <div class="form-container">
+            <h3 style="margin-bottom: 12px; font-size: 16px;">Criar Ordem de Serviço</h3>
+            <div class="form-group">
+                <label>Serviço / Título</label>
+                <input type="text" id="f_os_nome" class="form-input" placeholder="Ex: Manutenção Elétrica">
+            </div>
+            <div class="form-group">
+                <label>Detalhes Técnicos</label>
+                <textarea id="f_os_desc" class="form-input" placeholder="Descrição completa..."></textarea>
+            </div>
+            <button class="btn-primary" onclick="salvarOS()">Cadastrar O.S.</button>
+            
+            <div style="height: 30px;"></div>
+            <h3 style="margin-bottom: 12px; font-size: 16px;">Painel de Controle do Bot</h3>
+            <button class="btn-primary btn-secondary" onclick="enviarComandoChat('pdf_os_geral')">Emitir PDF de O.S.</button>
+            <button class="btn-primary btn-secondary" onclick="enviarComandoChat('gerenciar_acessos')">Gerenciar Acessos (IDs)</button>
+        </div>
+    </div>
+
+    <!-- TELA: ROLETA E JOGOS -->
+    <div id="view-jogos" class="view-container view-hidden">
+        <div class="nav-header">
+            <div class="back-btn" onclick="closeView('view-jogos')">‹ Voltar</div>
+            <h1>Roleta e Jogos</h1>
+            <div style="width: 60px;"></div>
+        </div>
+        <div class="form-container">
+            <div class="roleta-box">
+                <p style="color: var(--hint-color); font-size: 14px; font-weight: 600;">O JOGO SORTEADO É:</p>
+                <div id="roleta-result" class="roleta-resultado">❓</div>
+                <button class="btn-primary" onclick="rodarRoleta()" style="background: #af52de; color: white;">Sortear Agora!</button>
             </div>
             
-            <div class="dash-card" onclick="mudarAba('tela-parafuso', null)">
-                <div class="dash-icon" style="background: rgba(255, 149, 0, 0.15); color: #ff9500;">⚙️</div>
-                <div class="dash-info"><p>Engenharia</p><h3>Guia Roscas</h3></div>
-            </div>
-
-            <div class="dash-card" onclick="mudarAba('tela-orcamento', null)">
-                <div class="dash-icon" style="background: rgba(52, 199, 89, 0.15); color: #34c759;">💰</div>
-                <div class="dash-info"><p>Vendas</p><h3>Orçamentos</h3></div>
+            <div class="search-bar" style="margin-top: 30px;">
+                <input type="text" id="f_jogo_novo" class="form-input" placeholder="Adicionar novo jogo...">
+                <button class="btn-primary" style="width: 60px; margin: 0; padding: 0; background: #34c759;" onclick="addJogo()">Add</button>
             </div>
             
-            <div class="dash-card" onclick="mudarAba('tela-jogos', null)">
-                <div class="dash-icon" style="background: rgba(175, 82, 222, 0.15); color: #af52de;">🎮</div>
-                <div class="dash-info"><p>Lazer</p><h3>Jogos / Roleta</h3></div>
-            </div>
-
-            <div class="dash-card" onclick="acionarBot('pdf_os_geral')">
-                <div class="dash-icon" style="background: rgba(255, 59, 48, 0.15); color: #ff3b30;">📄</div>
-                <div class="dash-info"><p>Relatórios</p><h3>PDF de O.S.</h3></div>
-            </div>
+            <button class="btn-primary btn-secondary" onclick="window.open('https://poki.com.br', '_blank')">Jogar no Poki</button>
+            <button class="btn-primary btn-secondary" onclick="window.open('https://www.crazygames.com.br', '_blank')">Jogar no Crazy Games</button>
         </div>
-    </div>
-
-    <!-- TELA BUSCA -->
-    <div id="tela-busca" class="tela">
-        <h2 class="section-title">Pesquisa</h2>
-        <p class="section-subtitle">Localize lojas, parceiros e clientes cadastrados.</p>
-        
-        <div class="input-group" style="display: flex; align-items: center; padding: 6px 18px;">
-            <input type="text" id="campo-busca" placeholder="O que você procura?" onkeypress="if(event.key === 'Enter') acionarBusca()" style="flex:1; padding: 14px 0;">
-            <button onclick="acionarBusca()" style="background: var(--accent); width: 44px; height: 44px; border: none; border-radius: 12px; color: white; font-size: 18px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,122,255,0.3);">➔</button>
-        </div>
-        <div id="container-resultados" class="lista-resultados"></div>
-    </div>
-
-    <!-- TELA CADASTRO LOJA -->
-    <div id="tela-cadastro" class="tela">
-        <h2 class="section-title">Nova Loja</h2>
-        <p class="section-subtitle">Cadastre um novo ponto ou parceiro.</p>
-        
-        <div class="input-group"><label>Nome da Loja</label><input type="text" id="l_nome" placeholder="Ex: Decora Móveis"></div>
-        <div class="input-group"><label>Vendedor</label><input type="text" id="l_vend" placeholder="Responsável"></div>
-        <div class="input-group"><label>WhatsApp</label><input type="tel" id="l_whats" placeholder="(62) 99999-9999" oninput="mascaraTelefone(this)"></div>
-        <div class="input-group"><label>Fixo Loja (Opcional)</label><input type="tel" id="l_tel_loja" placeholder="(62) 3333-4444" oninput="mascaraTelefone(this)"></div>
-        <button class="btn-acao" onclick="enviarLoja()">Salvar Registro</button>
-    </div>
-
-    <!-- TELA ANIVERSÁRIOS -->
-    <div id="tela-aniv" class="tela">
-        <h2 class="section-title">Datas Especiais</h2>
-        <p class="section-subtitle">Guarde o aniversário de clientes e amigos.</p>
-        
-        <div class="input-group"><label>Nome Completo</label><input type="text" id="a_nome" placeholder="Ex: Carlos Andrade"></div>
-        <div class="input-group"><label>Data Nascimento</label><input type="text" id="a_data" placeholder="DD/MM/AAAA" oninput="mascaraData(this)"></div>
-        <div class="input-group"><label>WhatsApp</label><input type="tel" id="a_cel" placeholder="(62) 99999-9999" oninput="mascaraTelefone(this)"></div>
-        <button class="btn-acao" onclick="enviarAniv()">Guardar Aniversário</button>
-    </div>
-
-    <!-- TELA ADMIN -->
-    <div id="tela-admin" class="tela">
-        <h2 class="section-title">Administração</h2>
-        <p class="section-subtitle">Ordens de serviço e permissões.</p>
-        
-        <div class="input-group">
-            <label>Criar Ordem de Serviço</label>
-            <input type="text" id="o_nome" placeholder="Título / Serviço">
-            <textarea id="o_desc" rows="3" placeholder="Detalhes técnicos..." style="margin-top:12px; border-top: 1px solid var(--glass-border); padding-top: 12px;"></textarea>
-        </div>
-        <button class="btn-acao" onclick="enviarOS()">Cadastrar O.S.</button>
-        <div style="margin-top: 30px;"></div>
-        <h2 class="section-title" style="font-size: 18px;">Atalhos Rápidos</h2>
-        <button class="btn-acao btn-secundario" onclick="acionarBot('pdf_os_geral')">📄 Emitir Relatório O.S.</button>
-        <button class="btn-acao btn-secundario" onclick="acionarBot('gerenciar_acessos')">🔑 Painel de Acessos</button>
-    </div>
-
-    <!-- TELA GUIA DE ROSCAS -->
-    <div id="tela-parafuso" class="tela">
-        <h2 class="section-title">Usinagem</h2>
-        <p class="section-subtitle">Medidas e Furações (Roscas).</p>
-        
-        <div class="input-group" style="display: flex; align-items: center; padding: 6px 18px;">
-            <input type="text" id="p_medida" placeholder="Ex: M8, 1/4..." onkeypress="if(event.key === 'Enter') buscarParafuso()" style="flex:1; padding: 14px 0;">
-            <button onclick="buscarParafuso()" style="background: var(--accent); width: 44px; height: 44px; border: none; border-radius: 12px; color: white; font-size: 18px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,122,255,0.3);">⚙️</button>
-        </div>
-        <div id="resultado-parafuso" class="lista-resultados"></div>
-    </div>
-
-    <!-- TELA ORÇAMENTO -->
-    <div id="tela-orcamento" class="tela">
-        <h2 class="section-title">Gerador Rápido</h2>
-        <p class="section-subtitle">Monte e copie direto para o WhatsApp.</p>
-        
-        <div class="input-group"><label>Cliente</label><input type="text" id="orc_cliente" placeholder="Ex: Sr. Fausto"></div>
-        <div class="input-group"><label>Sua Empresa</label><input type="text" id="orc_empresa" value="Gouveia Soluções"></div>
-        <div class="input-group"><label>O que será feito?</label><textarea id="orc_desc" rows="3" placeholder="Ex: Confecção de 40 arcos..."></textarea></div>
-        <div class="input-group"><label>Valor Final (R$)</label><input type="number" id="orc_valor" placeholder="Ex: 450"></div>
-        <button class="btn-acao" onclick="gerarOrçamentoInApp()">📋 Copiar Texto do Orçamento</button>
-    </div>
-
-    <!-- TELA JOGOS -->
-    <div id="tela-jogos" class="tela">
-        <h2 class="section-title">Pausa Estratégica</h2>
-        <p class="section-subtitle">Sortudos giram a roleta.</p>
-
-        <div class="roleta-box">
-            <h3 style="color: var(--hint); font-size: 14px; text-transform: uppercase;">O Jogo da Vez é:</h3>
-            <div id="roleta-txt" class="roleta-result">❓</div>
-            <button class="btn-acao" style="background: #af52de; box-shadow: 0 8px 20px rgba(175, 82, 222, 0.3);" onclick="girarRoleta()">🎲 Sortear Jogo!</button>
-        </div>
-
-        <div class="input-group" style="display: flex; align-items: center; padding: 6px 18px; margin-top: 20px;">
-            <input type="text" id="j_novo" placeholder="Adicionar novo jogo" onkeypress="if(event.key === 'Enter') addJogo()" style="flex:1; padding: 14px 0;">
-            <button onclick="addJogo()" style="background: var(--success); width: 44px; height: 44px; border: none; border-radius: 12px; color: white; font-size: 18px; cursor: pointer; box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);">➕</button>
-        </div>
-
-        <button class="btn-acao btn-secundario" onclick="window.open('https://poki.com.br', '_blank')">🕹️ Poki Games</button>
-        <button class="btn-acao btn-secundario" onclick="window.open('https://www.crazygames.com.br', '_blank')">🏎️ Crazy Games</button>
-    </div>
-
-    <!-- DOCK FIXO -->
-    <div class="dock-container">
-        <button class="dock-item active" id="btn-home" onclick="mudarAba('tela-home', this)">
-            <div class="icon-box">📊</div><span>Início</span>
-        </button>
-        <button class="dock-item" id="btn-busca" onclick="mudarAba('tela-busca', this)">
-            <div class="icon-box">🔍</div><span>Busca</span>
-        </button>
-        <button class="dock-item" id="btn-loja" onclick="mudarAba('tela-cadastro', this)">
-            <div class="icon-box">🏬</div><span>Lojas</span>
-        </button>
-        <button class="dock-item" id="btn-aniv" onclick="mudarAba('tela-aniv', this)">
-            <div class="icon-box">🎂</div><span>Datas</span>
-        </button>
-        <button class="dock-item" id="btn-admin" onclick="mudarAba('tela-admin', this)">
-            <div class="icon-box">🔒</div><span>Admin</span>
-        </button>
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand(); 
+        const tg = window.Telegram.WebApp;
+        tg.expand();
         tg.ready();
 
-        // Configuração Central da API Segura
         const API_URL = "https://api.gouveiahub.com.br";
         const API_KEY = "erp_secret_key_v1";
-        
-        // Pega a inicial e nome do usuário do Telegram se disponível
+
         if(tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            let nome = tg.initDataUnsafe.user.first_name || "Gestor";
-            document.getElementById('user-name').innerText = nome;
-            document.getElementById('user-avatar').innerText = nome.charAt(0).toUpperCase();
+            document.getElementById('user-greeting').innerText = `Olá, ${tg.initDataUnsafe.user.first_name}!`;
         }
 
-        // Sistema elegante de Toast
-        function showToast(msg, tipo = "success") {
-            let container = document.getElementById("toast-container");
-            let icon = tipo === "success" ? "✅" : "⚠️";
-            let div = document.createElement("div");
-            div.className = `toast ${tipo}`;
-            div.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
-            container.appendChild(div);
-            tg.HapticFeedback.notificationOccurred(tipo);
-            
-            setTimeout(() => {
-                div.classList.add("fade-out");
-                setTimeout(() => div.remove(), 300);
-            }, 3000);
-        }
-
-        // Ações de Comunicação com Chat
-        function acionarBot(comando) {
-            tg.HapticFeedback.impactOccurred('heavy');
-            tg.sendData(JSON.stringify({tipo: 'acao_atalho', acao: comando}));
-            showToast("Comando enviado pro Chat!");
-            setTimeout(() => tg.close(), 800);
-        }
-
-        // Sistema de Navegação (Abas)
-        function mudarAba(idTela, botao) {
+        // ================= NAVEGAÇÃO =================
+        const views = [];
+        
+        function openView(id) {
             tg.HapticFeedback.impactOccurred('light');
-            let telas = document.querySelectorAll('.tela');
-            
-            // Procura a tela ativa para fechá-la
-            let telaAtiva = document.querySelector('.tela.ativa');
-            if (telaAtiva && telaAtiva.id !== idTela) {
-                telaAtiva.style.opacity = '0';
-                telaAtiva.style.transform = 'translateY(15px) scale(0.98)';
-                setTimeout(() => telaAtiva.classList.remove('ativa'), 350);
-            }
-            
-            // Remove active do dock apenas se for um botão do dock
-            if(botao) {
-                document.querySelectorAll('.dock-item').forEach(b => b.classList.remove('active'));
-                botao.classList.add('active');
-            }
-
-            // Abre a nova
-            setTimeout(() => {
-                let novaTela = document.getElementById(idTela);
-                novaTela.classList.add('ativa');
-                setTimeout(() => {
-                    novaTela.style.opacity = '1';
-                    novaTela.style.transform = 'translateY(0) scale(1)';
-                }, 20);
-            }, telaAtiva ? 350 : 0);
+            document.getElementById(id).classList.remove('view-hidden');
+            views.push(id);
+            tg.BackButton.show();
         }
 
-        // Helpers de Input
-        function mascaraTelefone(input) { let v = input.value.replace(/\D/g, ''); if (v.length > 11) v = v.slice(0, 11); if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3'); else if (v.length > 6) v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3'); else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2'); else if (v.length > 0) v = v.replace(/^(\d*)/, '($1'); input.value = v; }
-        function mascaraData(input) { let v = input.value.replace(/\D/g, ''); if (v.length > 8) v = v.slice(0, 8); if (v.length > 4) v = v.replace(/^(\d{2})(\d{2})(\d{0,4}).*/, '$1/$2/$3'); else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,2})/, '$1/$2'); input.value = v; }
+        function closeView(id) {
+            tg.HapticFeedback.impactOccurred('light');
+            document.getElementById(id).classList.add('view-hidden');
+            views.pop();
+            if(views.length === 0) tg.BackButton.hide();
+        }
 
-        // CORE API: Função universal blindada com API KEY
-        async function fetchAPI(endpoint, method = 'GET', body = null) {
-            let config = {
-                method: method,
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${API_KEY}`
-                }
-            };
-            if(body) config.body = JSON.stringify(body);
-            return await fetch(`${API_URL}${endpoint}`, config);
+        tg.BackButton.onClick(() => {
+            if(views.length > 0) {
+                let lastView = views[views.length - 1];
+                closeView(lastView);
+            }
+        });
+
+        // ================= API E REDE =================
+        async function req(endpoint, method = 'GET', body = null) {
+            let conf = { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` } };
+            if(body) conf.body = JSON.stringify(body);
+            return await fetch(`${API_URL}${endpoint}`, conf);
         }
 
         // ================= BUSCA GLOBAL =================
-        async function acionarBusca() {
-            tg.HapticFeedback.impactOccurred('medium');
-            let campoInput = document.getElementById('campo-busca');
-            let container = document.getElementById('container-resultados');
-            let termo = campoInput.value.trim();
-
-            campoInput.blur();
-            if (termo.length < 2) return showToast("Digite pelo menos 2 letras", "error");
-
-            container.innerHTML = "<div style='text-align:center; padding:30px;'><div class='loader'></div><p style='color:var(--hint); font-size:12px; margin-top:14px; font-weight:600;'>Buscando...</p></div>";
+        async function buscarGeral() {
+            let input = document.getElementById('q_busca');
+            let term = input.value.trim();
+            if(term.length < 2) return tg.showAlert("Digite pelo menos 2 letras.");
             
-            try {
-                let response = await fetchAPI(`/api/buscar?query=${encodeURIComponent(termo)}`);
-                let resultados = await response.json();
-                
-                container.innerHTML = ""; 
-                if (resultados.length === 0) {
-                    container.innerHTML = "<div class='item-resultado' style='text-align:center; border-left-color: var(--hint);'><span style='font-size:30px'>🤷‍♂️</span><br><br>Nenhum registro encontrado.</div>"; return;
-                }
+            input.blur();
+            let resDiv = document.getElementById('res_busca');
+            resDiv.innerHTML = "<div class='spinner'></div>";
+            tg.HapticFeedback.impactOccurred('medium');
 
-                resultados.forEach(item => {
-                    let html = `<div class='item-resultado'>`;
-                    if (item.tipo === "loja") {
-                        html += `<h4>🏬 ${item.loja}</h4><span style="color:var(--hint); font-size:12px; font-weight:700;">VENDEDOR: ${item.vendedor}</span><br><br>📞 Fixo: <b>${item.whatsapp}</b><br><a href="${item.link_zap}" target="_blank" class="btn-link">💬 Mensagem</a>`;
+            try {
+                let r = await req(`/api/buscar?query=${encodeURIComponent(term)}`);
+                let data = await r.json();
+                resDiv.innerHTML = "";
+                
+                if(data.length === 0) return resDiv.innerHTML = "<p style='text-align:center; color: var(--hint-color); padding: 20px;'>Nenhum resultado.</p>";
+                
+                data.forEach(item => {
+                    if(item.tipo === "loja") {
+                        resDiv.innerHTML += `
+                            <div class="result-card">
+                                <h3>🏬 ${item.loja}</h3>
+                                <p>Vend: ${item.vendedor}</p>
+                                <p>Fixo: ${item.whatsapp}</p>
+                                <span class="result-tag" onclick="window.open('${item.link_zap}', '_blank')">WhatsApp</span>
+                            </div>`;
                     } else {
-                        html += `<h4>👤 ${item.nome}</h4><span style="color:var(--hint); font-size:12px; font-weight:700;">NASCIMENTO: ${item.data} (${item.idade} anos)</span><br><br><a href="${item.link_zap}" target="_blank" class="btn-link">🎉 Mandar Parabéns</a>`;
+                        resDiv.innerHTML += `
+                            <div class="result-card">
+                                <h3>👤 ${item.nome}</h3>
+                                <p>Nasc: ${item.data}</p>
+                                <p>Idade: ${item.idade} anos</p>
+                                <span class="result-tag" onclick="window.open('${item.link_zap}', '_blank')">Mandar Parabéns</span>
+                            </div>`;
                     }
-                    html += `</div>`;
-                    container.innerHTML += html;
                 });
-            } catch (e) {
-                container.innerHTML = "<div class='item-resultado' style='border-color: var(--danger);'>⚠️ Falha na conexão segura.</div>";
+            } catch(e) {
+                resDiv.innerHTML = "<p style='color: var(--destructive-text-color);'>Erro de conexão.</p>";
             }
         }
 
         // ================= GUIA ROSCAS =================
-        async function buscarParafuso() {
-            tg.HapticFeedback.impactOccurred('medium');
-            let campoInput = document.getElementById('p_medida');
-            let medida = campoInput.value.trim().toUpperCase();
-            let divRes = document.getElementById('resultado-parafuso');
-
-            if(!medida) return showToast("Digite a medida!", "error");
-            campoInput.blur();
-            divRes.innerHTML = "<div style='text-align:center; padding:30px;'><div class='loader'></div><p style='color:var(--hint); font-size:12px; margin-top:14px; font-weight:600;'>Consultando tabela...</p></div>";
+        async function buscarRosca() {
+            let input = document.getElementById('q_rosca');
+            let term = input.value.trim();
+            if(!term) return;
             
-            try {
-                let res = await fetchAPI(`/api/parafuso`, 'POST', { medida });
-                let data = await res.json();
+            input.blur();
+            let resDiv = document.getElementById('res_rosca');
+            resDiv.innerHTML = "<div class='spinner'></div>";
+            tg.HapticFeedback.impactOccurred('medium');
 
+            try {
+                let r = await req(`/api/parafuso`, 'POST', { medida: term });
+                let data = await r.json();
+                
                 if(data.status === "success") {
-                    divRes.innerHTML = `
-                        <div class='item-resultado' style='border-left-color: var(--warning);'>
-                            <h4>⚙️ Parafuso ${data.nome}</h4>
-                            <p><b>Passo da Rosca:</b> <span style='color:var(--text); font-weight: 700;'>${data.specs.passo}</span></p>
-                            <p style="margin-top:6px;"><b>Broca p/ Furo:</b> <span style='color:var(--text); font-weight: 700;'>${data.specs.broca}</span></p>
-                            <p style="margin-top:6px;"><b>Chave Aperto:</b> <span style='color:var(--text); font-weight: 700;'>${data.specs.chave}</span></p>
+                    resDiv.innerHTML = `
+                        <div class="result-card" style="border-left: 4px solid var(--accent-text-color);">
+                            <h3>⚙️ ${data.nome}</h3>
+                            <p><b>Passo:</b> ${data.specs.passo}</p>
+                            <p><b>Broca:</b> ${data.specs.broca}</p>
+                            <p><b>Chave:</b> ${data.specs.chave}</p>
                         </div>`;
                 } else {
-                    divRes.innerHTML = `<div class='item-resultado' style='border-left-color: var(--danger); text-align:center;'>❌<br><br>Medida não catalogada.</div>`;
+                    resDiv.innerHTML = "<p style='color: var(--destructive-text-color);'>Não encontrado.</p>";
                 }
             } catch(e) {
-                divRes.innerHTML = "<div class='item-resultado' style='border-left-color: var(--danger);'>⚠️ Falha na rede.</div>";
+                resDiv.innerHTML = "<p style='color: var(--destructive-text-color);'>Erro de rede.</p>";
             }
         }
 
-        // ================= ENVIO DE DADOS =================
-        async function processarEnvio(endpoint, payload, camposLimpar) {
-            tg.HapticFeedback.impactOccurred('heavy');
+        // ================= FUNÇÕES GENÉRICAS (POSTS) =================
+        async function submitData(endpoint, payload, fecharViewID) {
+            tg.MainButton.setText("Enviando...").show().showProgress();
             try {
-                tg.MainButton.showProgress(); 
-                let response = await fetchAPI(endpoint, 'POST', payload);
-                let res = await response.json();
-                tg.MainButton.hideProgress();
-                
-                if(res.status === "success") {
-                    showToast("Registro salvo na base!");
-                    camposLimpar.forEach(id => document.getElementById(id).value = ""); 
-                    setTimeout(() => mudarAba('tela-home', document.getElementById('btn-home')), 800);
+                let r = await req(endpoint, 'POST', payload);
+                let d = await r.json();
+                if(d.status === "success") {
+                    tg.HapticFeedback.notificationOccurred('success');
+                    closeView(fecharViewID);
                 } else {
-                    showToast("Erro interno da API.", "error");
+                    tg.HapticFeedback.notificationOccurred('error');
+                    tg.showAlert("Erro ao salvar.");
                 }
             } catch(e) {
-                tg.MainButton.hideProgress();
-                showToast("Acesso Negado ou Rede Indisponível.", "error");
+                tg.HapticFeedback.notificationOccurred('error');
+                tg.showAlert("Erro de conexão.");
             }
+            tg.MainButton.hide();
         }
 
-        function enviarLoja() {
-            let loja = document.getElementById('l_nome').value.trim(), vend = document.getElementById('l_vend').value.trim();
-            let whats = document.getElementById('l_whats').value.trim(), telLoja = document.getElementById('l_tel_loja').value.trim();
-            if(!loja || !vend || !whats) return showToast("Faltam informações vitais!", "error");
-            processarEnvio('/api/nova_loja', { loja, vendedor: vend, whatsapp: whats, telefone_loja: telLoja }, ['l_nome','l_vend','l_whats','l_tel_loja']);
+        function salvarLoja() {
+            let l = document.getElementById('f_loja_nome').value;
+            let v = document.getElementById('f_loja_vend').value;
+            let w = document.getElementById('f_loja_wpp').value;
+            let f = document.getElementById('f_loja_fixo').value;
+            if(!l || !v || !w) return tg.showAlert("Preencha Loja, Vendedor e WhatsApp.");
+            submitData('/api/nova_loja', { loja: l, vendedor: v, whatsapp: w, telefone_loja: f }, 'view-loja');
         }
 
-        function enviarAniv() {
-            let nome = document.getElementById('a_nome').value.trim(), data = document.getElementById('a_data').value.trim(), cel = document.getElementById('a_cel').value.trim();
-            if(!nome || !data.includes('/')) return showToast("Data ou Nome inválidos!", "error");
-            processarEnvio('/api/novo_aniv', { nome, data, celular_formatado: cel }, ['a_nome','a_data','a_cel']);
+        function salvarAniv() {
+            let n = document.getElementById('f_aniv_nome').value;
+            let d = document.getElementById('f_aniv_data').value;
+            let c = document.getElementById('f_aniv_cel').value;
+            if(!n || !d) return tg.showAlert("Preencha o nome e a data.");
+            submitData('/api/novo_aniv', { nome: n, data: d, celular_formatado: c }, 'view-aniv');
         }
 
-        function enviarOS() {
-            let nome = document.getElementById('o_nome').value.trim(), desc = document.getElementById('o_desc').value.trim();
-            if(!nome || !desc) return showToast("Preencha Serviço e Detalhes!", "error");
-            processarEnvio('/api/nova_os', { nome, descricao: desc }, ['o_nome','o_desc']);
+        function salvarOS() {
+            let n = document.getElementById('f_os_nome').value;
+            let d = document.getElementById('f_os_desc').value;
+            if(!n || !d) return tg.showAlert("Preencha o serviço e descrição.");
+            submitData('/api/nova_os', { nome: n, descricao: d }, 'view-admin');
         }
 
-        // ================= ROLETA & JOGOS =================
-        async function girarRoleta() {
-            tg.HapticFeedback.impactOccurred('heavy');
-            let display = document.getElementById("roleta-txt");
-            display.innerHTML = "<div class='loader' style='border-top-color:#af52de;'></div>";
+        // ================= ORÇAMENTO =================
+        function copiarOrcamento() {
+            let c = document.getElementById('f_orc_cliente').value;
+            let e = document.getElementById('f_orc_empresa').value;
+            let d = document.getElementById('f_orc_desc').value;
+            let v = document.getElementById('f_orc_valor').value;
+            if(!c || !d || !v) return tg.showAlert("Preencha Cliente, Serviço e Valor!");
             
+            tg.HapticFeedback.impactOccurred('heavy');
+            let dataHoje = new Date().toLocaleDateString('pt-BR');
+            let txt = `📄 ORÇAMENTO\n👤 Cliente: ${c}\n🏢 Empresa: ${e}\n📅 Data: ${dataHoje}\n\n🛠️ Descrição do Serviço:\n ◦ ${d}\n\n💰 Valor Total: R$ ${v},00`;
+            
+            navigator.clipboard.writeText(txt).then(() => {
+                tg.showConfirm("Orçamento copiado! Deseja abrir o WhatsApp para colar?", function(open) {
+                    if(open) window.open('https://wa.me/', '_blank');
+                });
+            });
+        }
+
+        // ================= JOGOS / ROLETA =================
+        async function rodarRoleta() {
+            let d = document.getElementById('roleta-result');
+            d.innerHTML = "<div class='spinner'></div>";
+            tg.HapticFeedback.impactOccurred('heavy');
             try {
-                let res = await fetchAPI('/api/roleta', 'GET');
-                let data = await res.json();
-                
-                if(data.status === "success" && data.jogo) {
-                    display.innerText = data.jogo;
-                    display.style.animation = "slideIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)";
-                    showToast("Boa jogatina!");
+                let r = await req('/api/roleta', 'GET');
+                let data = await r.json();
+                if(data.status === "success") {
+                    d.innerText = data.sorteado || data.jogo; // Trata possíveis keys
                 } else {
-                    display.innerText = "Vazio!";
+                    d.innerText = "Vazio!";
                 }
             } catch(e) {
-                display.innerText = "Erro";
-                showToast("Erro ao conectar", "error");
+                d.innerText = "Erro";
             }
         }
 
         async function addJogo() {
-            let novo = document.getElementById('j_novo').value.trim();
-            if(!novo) return;
-            tg.HapticFeedback.impactOccurred('medium');
-            document.getElementById('j_novo').value = "Salvando...";
-            
+            let input = document.getElementById('f_jogo_novo');
+            let v = input.value.trim();
+            if(!v) return;
+            tg.HapticFeedback.impactOccurred('light');
             try {
-                let res = await fetchAPI('/api/add_jogo', 'POST', { jogo: novo });
-                let data = await res.json();
-                if(data.status === "success") {
-                    showToast("Jogo adicionado!");
+                let r = await req('/api/add_jogo', 'POST', { jogo: v });
+                let d = await r.json();
+                if(d.status === "success") {
+                    input.value = "";
+                    tg.showAlert("Jogo adicionado!");
                 }
             } catch(e) {
-                showToast("Erro ao salvar.", "error");
+                tg.showAlert("Erro ao adicionar jogo.");
             }
-            document.getElementById('j_novo').value = "";
         }
 
-        // ================= ORÇAMENTO OFFLINE =================
-        function gerarOrçamentoInApp() {
+        // ================= COMANDOS PARA O BOT (ATALHOS) =================
+        function enviarComandoChat(cmd) {
             tg.HapticFeedback.impactOccurred('heavy');
-            let cliente = document.getElementById('orc_cliente').value.trim();
-            let desc = document.getElementById('orc_desc').value.trim();
-            let valor = document.getElementById('orc_valor').value.trim();
-
-            if(!cliente || !desc || !valor) return showToast("Preencha todos os campos!", "error");
-
-            let dataF = new Date().toLocaleDateString('pt-BR');
-            let texto = `📄 ORÇAMENTO\n👤 Cliente: ${cliente}\n🏢 Empresa: ${document.getElementById('orc_empresa').value.trim()}\n📅 Data: ${dataF}\n\n🛠️ Descrição do Serviço:\n\n ◦ ${desc}\n\n💰 Valor Total: R$ ${valor},00`;
-
-            navigator.clipboard.writeText(texto).then(() => {
-                showToast("Copiado com sucesso!");
-                tg.showConfirm("Deseja abrir o WhatsApp agora para colar?", function(abrir) {
-                    if(abrir) window.open('https://wa.me/', '_blank');
-                });
-            }).catch(() => showToast("Erro ao copiar", "error"));
+            tg.sendData(JSON.stringify({tipo: 'acao_atalho', acao: cmd}));
+            tg.close();
         }
+
     </script>
 </body>
 </html>
